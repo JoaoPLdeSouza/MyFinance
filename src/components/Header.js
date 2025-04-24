@@ -1,9 +1,8 @@
-// src/components/Header.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/Header.css";
-import { FaBars } from "react-icons/fa";
-import authService from "../services/authService"; // Substitui axios direto
+import { FaBars, FaCog } from "react-icons/fa";
+import authService from "../services/authService";
 
 const Header = ({ toggleSidebar }) => {
   const [nomeUsuario, setNomeUsuario] = useState("");
@@ -23,6 +22,10 @@ const Header = ({ toggleSidebar }) => {
     navigate("/login");
   };
 
+  const handleConfig = () => {
+    navigate("/config");
+  };
+
   return (
     <header className="header">
       <button className="menu-button" onClick={toggleSidebar}>
@@ -30,6 +33,9 @@ const Header = ({ toggleSidebar }) => {
       </button>
       <div className="header-info">
         <span className="user-name">Olá, {nomeUsuario || "Usuário"}</span>
+        <button className="config-button" onClick={handleConfig}>
+          <FaCog size={18} />
+        </button>
         <button className="logout-button" onClick={handleLogout}>Sair</button>
       </div>
     </header>

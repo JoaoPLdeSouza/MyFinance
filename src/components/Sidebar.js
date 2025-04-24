@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../assets/Sidebar.css";
-import { FaChartBar, FaExchangeAlt, FaBullseye, FaRobot } from "react-icons/fa";
+import { FaChartBar, FaExchangeAlt, FaRobot } from "react-icons/fa";
 
 // Componente funcional Sidebar que recebe a prop isOpen (booleano para controle da expansão/recolhimento)
 const Sidebar = ({ isOpen }) => {
@@ -22,14 +22,6 @@ const Sidebar = ({ isOpen }) => {
           <Link to="/lancamentos">
             <FaExchangeAlt className="sidebar-icon" />
             <span className="link-text">Lançamentos</span>
-          </Link>
-        </li>
-
-        {/* Link para a página Metas com ícone e texto */}
-        <li>
-          <Link to="/metas">
-            <FaBullseye className="sidebar-icon" />
-            <span className="link-text">Metas</span>
           </Link>
         </li>
 

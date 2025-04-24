@@ -1,0 +1,67 @@
+.config-container {
+    max-width: 500px;
+    margin: 100px auto;
+    padding: 40px;
+    background-color: #ffffffd9; /* branco translúcido */
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+  
+  .config-container h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #2c3e50;
+  }
+  
+  .config-form {
+    text-align: left;
+  }
+  
+  .config-form .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .config-form label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .config-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+  }
+  
+  .config-form input:focus {
+    border-color: #4e8de3;
+    outline: none;
+  }
+  
+  .config-form button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #4e8de3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .config-form button[type="submit"]:hover {
+    background-color: #6cc1f0;
+  }
+  
+  .config-container p {
+    margin-top: 15px;
+    font-size: 14px;
+    color: green;
+  }
+  

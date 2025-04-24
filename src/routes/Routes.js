@@ -4,7 +4,7 @@ import Login from "../pages/Login";
 import Registro from "../pages/Registro";
 import Home from "../pages/Home";
 import Lancamentos from "../pages/Lancamentos";
-import Metas from "../pages/Metas";
+import Config from "../pages/Config";
 import IA from "../pages/IA";
 
 const AppRoutes = () => {
@@ -16,7 +16,7 @@ const AppRoutes = () => {
         <Route path="/registro" element={<Registro />} />
         <Route path="/home" element={<Home />} />
         <Route path="/lancamentos" element={<Lancamentos />} />
-        <Route path="/metas" element={<Metas />} />
+        <Route path="/config" element={<Config />} />
         <Route path="/ia" element={<IA />} />
       </Routes>
     </Router>
