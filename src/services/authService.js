@@ -19,8 +19,9 @@ const getUserById = async (id) => {
   return axios.get(`${API_URL}/usuario/buscar/${id}`);
 };
 
+// Atualizar usuário com id passado como query string
 const updateUser = async (id, dadosAtualizados) => {
-  return axios.put(`${API_URL}/usuario/atualizar/${id}`, dadosAtualizados, {
+  return axios.put(`${API_URL}/usuario?id=${id}`, dadosAtualizados, {
     headers: { "Content-Type": "application/json" }
   });
 };
