@@ -1,19 +1,56 @@
 // src/pages/Home.js
-import React, { useState } from "react";
+import React from "react";
 import Layout from "../components/Layout";
+import "../assets/Home.css";
+import { Chart } from "react-google-charts";
 
 const Home = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const data = [
+    ["Categoria", "Valor"],
+    ["Alimentação", 500],
+    ["Transporte", 200],
+    ["Saúde", 150],
+    ["Educação", 300],
+  ];
+
+  const options = {
+    title: "Distribuição de Gastos",
+    pieHole: 0.4,
+    is3D: false,
+  };
 
   return (
-    <div className={`page-container ${isSidebarOpen ? "sidebar-open" : ""}`}>
-      <Layout isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}>
-        <div className="main-content">
-          <h2>Página de Relatórios</h2>
-          <p>Bem-vindo à sua central financeira.</p>
+    <Layout>
+      <div className="home-container">
+        <h1 className="home-header">Relatórios Financeiros</h1>
+
+        {/* Top 3 cards de valores */}
+        <div className="top-cards">
+          <div className="stat-card">Rendimento Total<br/>R$ 0,00</div>
+          <div className="stat-card">Gastos Totais<br/>R$ 0,00</div>
+          <div className="stat-card">Valor Investido<br/>R$ 0,00</div>
         </div>
-      </Layout>
-    </div>
+
+        {/* Título da seção de gráficos */}
+        <div className="dashboard-title">Gráficos</div>
+
+        {/* Grid dos gráficos */}
+        <div className="dashboard-grid">
+          <div className="chart-card">
+            <Chart
+              chartType="PieChart"
+              width="100%"
+              height="300px"
+              data={data}
+              options={options}
+            />
+          </div>
+          <div className="chart-card">Gráfico 2</div>
+          <div className="chart-card">Gráfico 3</div>
+          <div className="chart-card">Gráfico 4</div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
