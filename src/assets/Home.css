@@ -17,6 +17,7 @@
 .top-cards {
   display: flex;
   justify-content: center;
+  padding-top: 600px;
   gap: 30px;
   margin-bottom: 60px;
 }
