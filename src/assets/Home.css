@@ -1,7 +1,8 @@
 .home-container {
-  margin-left: 220px;
-  padding: 80px 40px;
-  min-height: 100vh;
+  padding-top: 800px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 40px;
   background: transparent;
 }
 
@@ -13,11 +14,9 @@
   text-align: center;
 }
 
-/* Seção dos 3 cartões de valor */
 .top-cards {
   display: flex;
   justify-content: center;
-  padding-top: 600px;
   gap: 30px;
   margin-bottom: 60px;
 }
@@ -39,7 +38,6 @@
   align-items: center;
 }
 
-/* Título da área de gráficos */
 .dashboard-title {
   font-size: 24px;
   text-align: center;
@@ -47,7 +45,6 @@
   margin-bottom: 30px;
 }
 
-/* Grade dos gráficos (4 cards em 2 linhas) */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -67,4 +64,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #4e8de3, #6cc1f0);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  min-height: 100%;
 }

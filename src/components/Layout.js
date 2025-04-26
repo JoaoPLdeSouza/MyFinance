@@ -13,10 +13,13 @@ const Layout = ({ children }) => {
   return (
     <div className="layout">
       <Sidebar isOpen={isSidebarOpen} />
-      <div className="main-content" style={{ marginLeft: isSidebarOpen ? 220 : 60 }}>
+      <div
+        className="main-content"
+        style={{ marginLeft: isSidebarOpen ? 220 : 60 }} // espaço da sidebar
+      >
         <Header toggleSidebar={toggleSidebar} />
         <div className="page-content">
-          {children}
+          {children} {/* Aqui o conteúdo da página será exibido */}
         </div>
       </div>
     </div>

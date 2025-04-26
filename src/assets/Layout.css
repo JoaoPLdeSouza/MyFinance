@@ -1,15 +1,14 @@
 .layout {
-    display: flex;
-  }
-  
-  .main-content {
-    flex: 1;
-    transition: margin-left 0.3s ease;
-    padding-top: 60px; /* Espaço para o header fixo */
-  }
-  
-  .page-content {
-    padding: 20px;
-    min-height: 100vh;
-  }
-  
+  display: flex;
+}
+
+.main-content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+  padding-top: 60px; /* Espaço reservado para o header fixo */
+}
+
+.page-content {
+  padding: 20px;
+  min-height: 100vh;
+}
