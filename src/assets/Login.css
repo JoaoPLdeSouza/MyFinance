@@ -5,86 +5,103 @@
   box-sizing: border-box;
 }
 
-/* Corpo da página com fundo gradiente suave */
+/* Corpo da página */
 body {
   font-family: Arial, sans-serif;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4e8de3, #6cc1f0); /* Gradiente em tons de azul e turquesa */
-  background-size: cover;
+  background: linear-gradient(135deg, #4e8de3, #6cc1f0);
 }
 
-/* Contêiner do login centralizado */
+/* Contêiner do login */
 .login-container {
   position: relative;
   text-align: center;
-  width: 150%; /* Aumentando a largura */
-  max-width: 450px; /* Limitando a largura máxima */
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.9); /* Fundo branco translúcido */
+  width: 150%; /* Aumenta a largura proporcionalmente */
+  max-width: 500px; /* Novo tamanho máximo */
+  padding: 50px; /* Ajustado para manter proporcionalidade */
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  margin-left: -25%; /* Ajusta para centralizar */
+}
+
+/* Círculo superior para o logo */
+.login-image-container {
+  position: absolute;
+  top: -80px; /* Posicionado para não invadir o título */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  background-color: white;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Estilo do título */
 .login-title {
-  font-size: 30px;
+  font-size: 35px; /* Tamanho ajustado */
   font-weight: bold;
   color: #333;
-  margin-bottom: 30px;
+  margin-bottom: 40px; /* Espaçamento maior */
 }
 
-/* Estilo do formulário de login */
+/* Estilo do formulário */
 .input-group {
-  margin-bottom: 20px;
-  text-align: left;
+  margin-bottom: 25px; /* Ajuste no espaçamento */
 }
 
-.input-group label {
-  display: block;
-  font-size: 14px;
+.input-wrapper {
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px; /* Tamanho do ícone ajustado */
   color: #555;
-  margin-bottom: 8px;
 }
 
 .input-field {
   width: 100%;
-  padding: 12px;
+  padding: 12px 12px 12px 45px; /* Espaço ajustado para o ícone */
   border: 2px solid #e1e1e1;
   border-radius: 8px;
   background-color: #f7f7f7;
-  font-size: 16px;
+  font-size: 18px; /* Ajuste do tamanho da fonte */
 }
 
 .input-field:focus {
   outline: none;
-  border-color: #4e8de3; /* Cor de destaque */
+  border-color: #4e8de3;
 }
 
 /* Botão de login */
 .login-button {
   width: 100%;
-  padding: 12px;
-  background-color: #4e8de3; /* Cor vibrante para o botão */
+  padding: 15px;
+  background-color: #4e8de3;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 18px; /* Ajuste do tamanho da fonte */
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .login-button:hover {
-  background-color: #6cc1f0; /* Cor mais suave no hover */
+  background-color: #6cc1f0;
 }
 
 /* Link de registro */
 .signup-link {
-  margin-top: 15px;
-  font-size: 14px;
+  margin-top: 20px; /* Espaçamento ajustado */
+  font-size: 16px; /* Tamanho do texto ajustado */
   color: #555;
 }
 
@@ -95,20 +112,4 @@ body {
 
 .signup-link a:hover {
   text-decoration: underline;
-}
-
-/* Imagem do rosto anônimo (subindo um pouco mais e com fundo branco) */
-.login-image-container {
-  position: absolute;
-  top: -80px; /* Subi mais o círculo */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 120px;
-  background-color: white; /* Preenchido de branco por enquanto */
-  background-size: cover;
-  background-position: center;
-  border-radius: 50%;
-  border: 5px solid #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Sombra suave para dar destaque */
 }
