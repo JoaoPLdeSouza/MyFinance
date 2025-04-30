@@ -1,83 +1,98 @@
 // src/pages/Config.js
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
 import "../assets/Config.css";
+import { useNavigate } from "react-router-dom";
 
 const Config = () => {
-  const [usuario, setUsuario] = useState({ nome: "", email: "", senha: "" });
-  const [mensagem, setMensagem] = useState("");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [usuario, setUsuario] = useState(null);
+  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const dadosSalvos = JSON.parse(localStorage.getItem("usuario"));
-    if (dadosSalvos?.id) {
-      authService.getUserById(dadosSalvos.id)
-        .then(res => setUsuario(res.data))
-        .catch(err => console.error("Erro ao carregar dados do usuário:", err));
+    const storedUser = JSON.parse(localStorage.getItem("usuario"));
+    if (storedUser) {
+      authService.getUserById(storedUser.id)
+        .then((res) => {
+          setUsuario(res.data);
+          setNome(res.data.nome);
+          setEmail(res.data.email);
+        })
+        .catch((err) => {
+          console.error("Erro ao carregar dados:", err);
+        });
     }
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUsuario((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSalvar = async (e) => {
     e.preventDefault();
     try {
-      const dadosSalvos = JSON.parse(localStorage.getItem("usuario"));
-      await authService.updateUser(dadosSalvos.id, usuario);
-      setMensagem("Dados atualizados com sucesso!");
+      const dados = {
+        id: usuario.id,
+        nome,
+        email,
+        senha: novaSenha
+      };
+      await authService.updateUser(dados);
+      alert("Dados atualizados com sucesso!");
     } catch (error) {
-      setMensagem("Erro ao atualizar os dados.");
-      console.error("Erro ao atualizar usuário:", error);
+      alert("Erro ao atualizar dados.");
+      console.error(error);
     }
   };
+
+  const handleConfirmarExclusao = async () => {
+    try {
+      await authService.delet(usuario.id);
+      localStorage.removeItem("usuario");
+      navigate("/login");
+    } catch (err) {
+      alert("Erro ao deletar conta.");
+      console.error(err);
+    }
+  };
+
+  const abrirModalConfirmacao = () => setMostrarConfirmacao(true);
+  const fecharModalConfirmacao = () => setMostrarConfirmacao(false);
 
   return (
     <Layout>
       <div className="config-container">
         <h2>Alterar Dados</h2>
-        <form className="config-form" onSubmit={handleSubmit}>
+        <form className="config-form" onSubmit={handleSalvar}>
           <div className="form-group">
-            <label htmlFor="nome">Nome:</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={usuario.nome}
-              onChange={handleChange}
-              required
-            />
+            <label>Nome:</label>
+            <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">E-mail:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={usuario.email}
-              onChange={handleChange}
-              required
-            />
+            <label>E-mail:</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
 
           <div className="form-group">
-            <label htmlFor="senha">Nova senha:</label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              value={usuario.senha}
-              onChange={handleChange}
-              required
-            />
+            <label>Nova senha:</label>
+            <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} />
           </div>
 
-          <button type="submit">Salvar Alterações</button>
-          {mensagem && <p>{mensagem}</p>}
+          <button type="submit" className="salvar-btn">Salvar Alterações</button>
         </form>
+
+        <button onClick={abrirModalConfirmacao} className="deletar-btn">Deletar Conta</button>
+
+        {mostrarConfirmacao && (
+          <div className="modal-confirmacao">
+            <div className="modal-conteudo">
+              <p>Tem certeza que deseja excluir sua conta?</p>
+              <button onClick={handleConfirmarExclusao} className="confirmar-btn">Sim, excluir</button>
+              <button onClick={fecharModalConfirmacao} className="cancelar-btn">Cancelar</button>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

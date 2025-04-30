@@ -1,46 +1,40 @@
+// src/pages/Registro.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/Registro.css";
-import authService from "../services/authService"; // Serviço para requisições ao back-end
+import authService from "../services/authService";
 
 const Registro = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmSenha, setConfirmSenha] = useState("");
   const [erro, setErro] = useState("");
-
   const navigate = useNavigate();
 
-  // Função chamada ao enviar o formulário de registro
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro("");
+    setErro(""); // Limpa o erro anterior
 
-    if (password !== confirmPassword) {
+    if (senha !== confirmSenha) {
       setErro("As senhas não coincidem!");
       return;
     }
 
     try {
-      // Envia os dados para o back-end
-      await authService.register({
-        nome,
-        email,
-        senha: password, // Nome do campo esperado pelo back-end
-      });
-
-      // Redireciona para o login após sucesso
+      await authService.register({ nome, email, senha });
+      alert("Usuário registrado com sucesso!");
       navigate("/login");
     } catch (err) {
-      setErro("Erro ao registrar. Verifique os dados ou tente novamente.");
       console.error("Erro ao registrar:", err);
+      setErro("Erro ao registrar. Verifique os dados ou tente novamente.");
     }
   };
 
   return (
     <div className="register-container">
       <h2>Registro</h2>
+
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="nome">Nome:</label>
@@ -65,28 +59,28 @@ const Registro = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="password">Senha:</label>
+          <label htmlFor="senha">Senha:</label>
           <input
             type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            id="senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="confirmPassword">Confirme sua senha:</label>
+          <label htmlFor="confirmSenha">Confirme sua senha:</label>
           <input
             type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            id="confirmSenha"
+            value={confirmSenha}
+            onChange={(e) => setConfirmSenha(e.target.value)}
             required
           />
         </div>
 
-        {erro && <p style={{ color: "red" }}>{erro}</p>}
+        {erro && <p className="error">{erro}</p>}
 
         <button type="submit">Registrar</button>
       </form>

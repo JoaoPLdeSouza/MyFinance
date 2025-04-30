@@ -9,28 +9,30 @@ const login = async ({ email, senha }) => {
   });
 };
 
-const register = async ({ nome, email, senha }) => {
-  return axios.post(`${API_URL}/usuario`, { nome, email, senha }, {
-    headers: { "Content-Type": "application/json" }
-  });
+const register = (usuario) => {
+  return axios.post(`${API_URL}/usuario/cadastrar`, usuario);
 };
+
 
 const getUserById = async (id) => {
   return axios.get(`${API_URL}/usuario/buscar/${id}`);
 };
 
 // Atualizar usuário com id passado como query string
-const updateUser = async (id, dadosAtualizados) => {
-  return axios.put(`${API_URL}/usuario?id=${id}`, dadosAtualizados, {
-    headers: { "Content-Type": "application/json" }
-  });
+const updateUser = (usuario) => {
+  return axios.put(`${API_URL}/usuario/alterar`, usuario);
+};
+
+const delet = (id) => {
+  return axios.delete(`${API_URL}/usuario/delete?id=${id}`);
 };
 
 const authService = {
   login,
   register,
   getUserById,
-  updateUser
+  updateUser,
+  delet
 };
 
 export default authService;
