@@ -56,3 +56,36 @@
 .config-button:hover {
   color: #1abc9c;
 }
+
+.config-wrapper {
+  position: relative;
+}
+
+.config-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  z-index: 200;
+  min-width: 180px;
+}
+
+.config-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
+  font-size: 14px;
+  color: #34495e;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.config-menu button:hover {
+  background-color: #ecf0f1;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/Header.css";
 import { FaBars, FaCog } from "react-icons/fa";
@@ -6,6 +6,8 @@ import authService from "../services/authService";
 
 const Header = ({ toggleSidebar }) => {
   const [nomeUsuario, setNomeUsuario] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,13 +19,28 @@ const Header = ({ toggleSidebar }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("usuario");
     navigate("/login");
   };
 
-  const handleConfig = () => {
-    navigate("/config");
+  const toggleMenu = () => {
+    setShowMenu((prev) => !prev);
+  };
+
+  const goTo = (path) => {
+    setShowMenu(false);
+    navigate(path);
   };
 
   return (
@@ -33,9 +50,18 @@ const Header = ({ toggleSidebar }) => {
       </button>
       <div className="header-info">
         <span className="user-name">Olá, {nomeUsuario || "Usuário"}</span>
-        <button className="config-button" onClick={handleConfig}>
-          <FaCog size={18} />
-        </button>
+        <div className="config-wrapper" ref={menuRef}>
+          <button className="config-button" onClick={toggleMenu}>
+            <FaCog size={18} />
+          </button>
+          {showMenu && (
+            <div className="config-menu">
+              <button onClick={() => goTo("/config")}>Alterar Dados</button>
+              <button onClick={() => goTo("/alterar-rendimento")}>Alterar Rendimento</button>
+              <button onClick={() => goTo("/alterar-email")}>Alterar E-mail</button>
+            </div>
+          )}
+        </div>
         <button className="logout-button" onClick={handleLogout}>Sair</button>
       </div>
     </header>

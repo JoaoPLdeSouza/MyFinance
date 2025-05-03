@@ -6,6 +6,8 @@ import Home from "../pages/Home";
 import Lancamentos from "../pages/Lancamentos";
 import Config from "../pages/Config";
 import IA from "../pages/IA";
+import AlterarRendimento from '../pages/AlterarRendimento';
+import AlterarEmail from '../pages/AlterarEmail';
 
 const AppRoutes = () => {
   return (
@@ -18,6 +20,8 @@ const AppRoutes = () => {
         <Route path="/lancamentos" element={<Lancamentos />} />
         <Route path="/config" element={<Config />} />
         <Route path="/ia" element={<IA />} />
+        <Route path="/alterar-rendimento" element={<AlterarRendimento />} />
+        <Route path="/alterar-email" element={<AlterarEmail />} />
       </Routes>
     </Router>
   );
