@@ -23,13 +23,14 @@ const AlterarEmail = () => {
   const handleSalvar = async (e) => {
     e.preventDefault();
     try {
-      await authService.alterarEmail({ id: usuario.id, email });
+      await authService.alterarEmail(usuario.id, email);
       alert("E-mail atualizado com sucesso!");
     } catch (error) {
       alert("Erro ao atualizar e-mail.");
       console.error(error);
     }
   };
+  
 
   return (
     <Layout>
