@@ -56,7 +56,7 @@ const Header = ({ toggleSidebar }) => {
           </button>
           {showMenu && (
             <div className="config-menu">
-              <button onClick={() => goTo("/config")}>Alterar Dados</button>
+              <button onClick={() => goTo("/config")}>Alterar Senha</button>
               <button onClick={() => goTo("/alterar-rendimento")}>Alterar Rendimento</button>
               <button onClick={() => goTo("/alterar-email")}>Alterar E-mail</button>
             </div>

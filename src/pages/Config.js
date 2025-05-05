@@ -1,52 +1,42 @@
 // src/pages/Config.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
 import "../assets/Config.css";
 import { useNavigate } from "react-router-dom";
 
 const Config = () => {
-  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
-  const [usuario, setUsuario] = useState(null);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("usuario"));
-    if (storedUser) {
-      authService.getUserById(storedUser.id)
-        .then((res) => {
-          setUsuario(res.data);
-          setNome(res.data.nome);
-          setEmail(res.data.email);
-        })
-        .catch((err) => {
-          console.error("Erro ao carregar dados:", err);
-        });
-    }
-  }, []);
-
-  const handleSalvar = async (e) => {
+  const handleAlterarSenha = async (e) => {
     e.preventDefault();
     try {
-      const dados = {
-        id: usuario.id,
-        nome,
-        email,
-        senha: novaSenha
+      const usuario = JSON.parse(localStorage.getItem("usuario"));
+      const request = {
+        email: email,
+        senhaAntiga: senhaAntiga,
+        senhaNova: novaSenha
       };
-      await authService.updateUser(dados);
-      alert("Dados atualizados com sucesso!");
+      
+
+      await authService.alterarSenha(usuario.id, request);
+      alert("Senha alterada com sucesso!");
+      setEmail("");
+      setSenhaAntiga("");
+      setNovaSenha("");
     } catch (error) {
-      alert("Erro ao atualizar dados.");
+      alert("Erro ao alterar senha.");
       console.error(error);
     }
   };
 
   const handleConfirmarExclusao = async () => {
     try {
+      const usuario = JSON.parse(localStorage.getItem("usuario"));
       await authService.delet(usuario.id);
       localStorage.removeItem("usuario");
       navigate("/login");
@@ -62,24 +52,24 @@ const Config = () => {
   return (
     <Layout>
       <div className="config-container">
-        <h2>Alterar Dados</h2>
-        <form className="config-form" onSubmit={handleSalvar}>
-          <div className="form-group">
-            <label>Nome:</label>
-            <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
-          </div>
-
+        <h2>Alterar Senha</h2>
+        <form className="config-form" onSubmit={handleAlterarSenha}>
           <div className="form-group">
             <label>E-mail:</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
 
           <div className="form-group">
-            <label>Nova senha:</label>
-            <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} />
+            <label>Senha Atual:</label>
+            <input type="password" value={senhaAntiga} onChange={(e) => setSenhaAntiga(e.target.value)} required />
           </div>
 
-          <button type="submit" className="salvar-btn">Salvar Alterações</button>
+          <div className="form-group">
+            <label>Nova Senha:</label>
+            <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} required />
+          </div>
+
+          <button type="submit" className="salvar-btn">Alterar Senha</button>
         </form>
 
         <button onClick={abrirModalConfirmacao} className="deletar-btn">Deletar Conta</button>
