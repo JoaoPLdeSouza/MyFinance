@@ -3,14 +3,11 @@ import React, { useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
 import "../assets/Config.css";
-import { useNavigate } from "react-router-dom";
 
 const Config = () => {
   const [email, setEmail] = useState("");
   const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
-  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
-  const navigate = useNavigate();
 
   const handleAlterarSenha = async (e) => {
     e.preventDefault();
@@ -34,21 +31,6 @@ const Config = () => {
     }
   };
 
-  const handleConfirmarExclusao = async () => {
-    try {
-      const usuario = JSON.parse(localStorage.getItem("usuario"));
-      await authService.delet(usuario.id);
-      localStorage.removeItem("usuario");
-      navigate("/login");
-    } catch (err) {
-      alert("Erro ao deletar conta.");
-      console.error(err);
-    }
-  };
-
-  const abrirModalConfirmacao = () => setMostrarConfirmacao(true);
-  const fecharModalConfirmacao = () => setMostrarConfirmacao(false);
-
   return (
     <Layout>
       <div className="config-container">
@@ -71,18 +53,6 @@ const Config = () => {
 
           <button type="submit" className="salvar-btn">Alterar Senha</button>
         </form>
-
-        <button onClick={abrirModalConfirmacao} className="deletar-btn">Deletar Conta</button>
-
-        {mostrarConfirmacao && (
-          <div className="modal-confirmacao">
-            <div className="modal-conteudo">
-              <p>Tem certeza que deseja excluir sua conta?</p>
-              <button onClick={handleConfirmarExclusao} className="confirmar-btn">Sim, excluir</button>
-              <button onClick={fecharModalConfirmacao} className="cancelar-btn">Cancelar</button>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );

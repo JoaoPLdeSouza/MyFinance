@@ -6,6 +6,7 @@ import "../assets/Config.css";
 
 const AlterarEmail = () => {
   const [email, setEmail] = useState("");
+  const [senhaAtual, setSenhaAtual] = useState("");
   const [usuario, setUsuario] = useState(null);
 
   useEffect(() => {
@@ -23,14 +24,14 @@ const AlterarEmail = () => {
   const handleSalvar = async (e) => {
     e.preventDefault();
     try {
-      await authService.alterarEmail(usuario.id, email);
+      await authService.alterarEmail(usuario.id, email, senhaAtual);
       alert("E-mail atualizado com sucesso!");
+      setSenhaAtual("");
     } catch (error) {
-      alert("Erro ao atualizar e-mail.");
+      alert("Senha incorreta.");
       console.error(error);
     }
   };
-  
 
   return (
     <Layout>
@@ -41,8 +42,16 @@ const AlterarEmail = () => {
             <label>Novo e-mail:</label>
             <input
               type="email"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Senha atual:</label>
+            <input
+              type="password"
+              value={senhaAtual}
+              onChange={(e) => setSenhaAtual(e.target.value)}
               required
             />
           </div>

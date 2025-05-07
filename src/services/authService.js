@@ -31,11 +31,10 @@ const alterarRendimento = (id, rendimento) => {
   });
 };
 
-const alterarEmail = (id, email) => {
-  return axios.put(`${API_URL}/usuario/alterar/email`, null, {
-    params: { id, email },
-  });
+const alterarEmail = (id, email, senha) => {
+  return axios.put(`${API_URL}/usuario/alterar/email?id=${id}`, { email, senha });
 };
+
 
 const authService = {
   login,
