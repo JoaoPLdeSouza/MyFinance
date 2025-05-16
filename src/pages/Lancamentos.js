@@ -66,7 +66,7 @@ const Lancamentos = () => {
                 <td>R$ {item.valor.toFixed(2)}</td>
                 <td>{item.categoria}</td>
                 <td>{item.subcategoria}</td>
-                <td>{item.data}</td>
+                <td>{item.dataHora}</td>
                 <td className="acoes">
                   <button className="editar">Editar</button>
                   <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
