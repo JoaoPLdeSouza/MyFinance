@@ -5,7 +5,7 @@
 .main-content {
   flex: 1;
   transition: margin-left 0.3s ease;
-  padding-top: 60px; /* Espaço reservado para o header fixo */
+  padding-top: 600px; /* Espaço reservado para o header fixo */
 }
 
 .page-content {

@@ -22,7 +22,7 @@ const alterarSenha = async (id, request) => {
 };
 
 const delet = (id) => {
-  return axios.delete(`${API_URL}/usuario/delete?id=${id}`);
+  return axios.delete(`${API_URL}/usuario_gasto/delete?id=${id}`);
 };
 
 const alterarRendimento = (id, rendimento) => {
@@ -35,6 +35,11 @@ const alterarEmail = (id, email, senha) => {
   return axios.put(`${API_URL}/usuario/alterar/email?id=${id}`, { email, senha });
 };
 
+const buscarLancamentosPorUsuario = (idUsuario) => {
+  return axios.get(`${API_URL}/gasto/usuario/all`, {
+    params: { idUsuario }
+  });
+};
 
 const authService = {
   login,
@@ -43,7 +48,8 @@ const authService = {
   alterarSenha,
   delet,
   alterarRendimento,
-  alterarEmail
+  alterarEmail,
+  buscarLancamentosPorUsuario
 };
 
 export default authService;
