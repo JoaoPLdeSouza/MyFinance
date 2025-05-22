@@ -2,13 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
-import EditarModal from "../components/EditarModal"; // ✅ necessário para o modal
+import EditarModal from "../components/EditarModal";
+import NovoModal from "../components/NovoModal"; // ✅ importado
 import "../assets/Lancamentos.css";
 
 const Lancamentos = () => {
   const [lancamentos, setLancamentos] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [modalAberto, setModalAberto] = useState(false);
+  const [novoModalAberto, setNovoModalAberto] = useState(false); // ✅ novo estado
   const [lancamentoSelecionado, setLancamentoSelecionado] = useState(null);
   const itensPorPagina = 15;
 
@@ -45,13 +47,11 @@ const Lancamentos = () => {
     }
   };
 
-  // ✅ Abre o modal com o lançamento atual
   const abrirModal = (lancamento) => {
     setLancamentoSelecionado(lancamento);
     setModalAberto(true);
   };
 
-  // ✅ Salva alterações feitas no modal
   const salvarAlteracoes = async (lancamentoEditado) => {
     try {
       await authService.alterarGasto(lancamentoEditado.id, {
@@ -72,12 +72,27 @@ const Lancamentos = () => {
     }
   };
 
+  // ✅ Salva novo lançamento e recarrega a lista
+  const handleSalvarNovo = async (idUsuario, novoGasto) => {
+    try {
+      await authService.cadastrarGasto(idUsuario, novoGasto);
+      const res = await authService.buscarLancamentosPorUsuario(idUsuario);
+      setLancamentos(res.data);
+      setNovoModalAberto(false);
+    } catch (error) {
+      alert("Erro ao cadastrar novo lançamento.");
+      console.error(error);
+    }
+  };
+
   return (
     <Layout>
       <div className="lancamentos-container">
         <div className="header-bar">
           <h2>Lançamentos</h2>
-          <button className="novo-button">+ Novo Lançamento</button>
+          <button className="novo-button" onClick={() => setNovoModalAberto(true)}>
+            + Novo Lançamento
+          </button>
         </div>
 
         <table className="lancamentos-table">
@@ -121,12 +136,18 @@ const Lancamentos = () => {
         </div>
       </div>
 
-      {/* ✅ Modal de edição */}
       {modalAberto && (
         <EditarModal
           lancamento={lancamentoSelecionado}
           onClose={() => setModalAberto(false)}
           onSave={salvarAlteracoes}
+        />
+      )}
+
+      {novoModalAberto && (
+        <NovoModal
+          onClose={() => setNovoModalAberto(false)}
+          onSalvarNovo={handleSalvarNovo}
         />
       )}
     </Layout>

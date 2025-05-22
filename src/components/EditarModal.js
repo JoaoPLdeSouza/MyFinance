@@ -1,4 +1,3 @@
-// src/components/EditarModal.js
 import React, { useEffect, useState } from "react";
 import "../assets/EditarModal.css";
 
@@ -18,7 +17,6 @@ const categorias = {
   ]
 };
 
-// ✅ Mapeia categorias para nomes amigáveis
 const categoriaFormatada = {
   NECESSIDADES: "Necessidade",
   DESEJOS: "Desejo",
@@ -26,28 +24,58 @@ const categoriaFormatada = {
 };
 
 const EditarModal = ({ lancamento, onClose, onSave }) => {
-  const [valor, setValor] = useState(lancamento.valor);
+  const formatarValor = (valorNumerico) => {
+    let centavos = Math.round(valorNumerico * 100).toString().padStart(3, "0");
+    const inteiro = centavos.slice(0, -2);
+    const decimal = centavos.slice(-2);
+    return `${parseInt(inteiro, 10)},${decimal}`;
+  };
+
+  const [valor, setValor] = useState("0,00");
   const [categoria, setCategoria] = useState(lancamento.categoria);
   const [subcategoria, setSubcategoria] = useState(lancamento.subcategoria);
+
+  useEffect(() => {
+    setValor(formatarValor(lancamento.valor));
+  }, [lancamento.valor]);
 
   useEffect(() => {
     const primeiraSub = categorias[categoria]?.[0] || "";
     setSubcategoria(primeiraSub);
   }, [categoria]);
 
+  const handleValorChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, "");
+
+    // Impede o campo de ficar vazio
+    if (raw === "") raw = "000";
+
+    while (raw.length < 3) {
+      raw = "0" + raw;
+    }
+
+    const inteiro = raw.slice(0, -2);
+    const decimal = raw.slice(-2);
+    const formatado = `${parseInt(inteiro, 10)},${decimal}`;
+
+    setValor(formatado);
+  };
+
   const handleSalvar = () => {
     if (valor && categoria && subcategoria) {
       onSave({
         id: lancamento.id,
         dataHora: lancamento.dataHora,
-        valor: parseFloat(valor),
+        valor: parseFloat(valor.replace(",", ".")),
         categoria,
         subcategoria
       });
     }
   };
 
-  const dataFormatada = lancamento.dataHora;
+  const dataFormatada = lancamento.dataHora
+    ? new Date(lancamento.dataHora).toLocaleDateString("pt-BR")
+    : "—";
 
   return (
     <div className="modal-overlay">
@@ -59,21 +87,31 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
         <label>Valor:</label>
         <input
           type="text"
-          value={parseFloat(valor).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })}
-          onChange={(e) => {
-            const raw = e.target.value.replace(/[^\d,]/g, "").replace(",", ".");
-            setValor(raw);
+          inputMode="numeric"
+          value={valor}
+          onChange={handleValorChange}
+          onKeyDown={(e) => {
+            // Bloqueia teclas de movimentação, deletar, setas, etc
+            const invalidKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+            if (invalidKeys.includes(e.key)) {
+              e.preventDefault();
+            }
           }}
+          onClick={(e) => e.preventDefault()} // impede mudar posição do cursor com clique
+          onSelect={(e) => {
+            // força o cursor sempre no fim
+            const len = e.target.value.length;
+            setTimeout(() => e.target.setSelectionRange(len, len), 0);
+          }}
+          onPaste={(e) => e.preventDefault()} // bloqueia colar
         />
+
 
         <label>Categoria:</label>
         <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
           {Object.keys(categorias).map((cat) => (
             <option key={cat} value={cat}>
-              {categoriaFormatada[cat] || cat}
+              {categoriaFormatada[cat]}
             </option>
           ))}
         </select>

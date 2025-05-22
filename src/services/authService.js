@@ -47,6 +47,13 @@ const alterarGasto = (id, gasto) => {
   });
 };
 
+const cadastrarGasto = (idUsuario, dados) => {
+  return axios.post(`${API_URL}/gasto/cadastrar`, dados, {
+    params: { idUsuario }
+  });
+};
+
+
 const authService = {
   login,
   register,
@@ -57,6 +64,7 @@ const authService = {
   alterarEmail,
   buscarLancamentosPorUsuario,
   alterarGasto,
+  cadastrarGasto
 };
 
 export default authService;
