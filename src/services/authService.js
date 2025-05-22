@@ -53,6 +53,11 @@ const cadastrarGasto = (idUsuario, dados) => {
   });
 };
 
+const deletarGasto = (id) => {
+  return axios.delete(`${API_URL}/gasto/deletar`, {
+    params: { id }
+  });
+};
 
 const authService = {
   login,
@@ -64,7 +69,8 @@ const authService = {
   alterarEmail,
   buscarLancamentosPorUsuario,
   alterarGasto,
-  cadastrarGasto
+  cadastrarGasto,
+  deletarGasto
 };
 
 export default authService;

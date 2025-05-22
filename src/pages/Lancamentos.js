@@ -3,25 +3,29 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
 import EditarModal from "../components/EditarModal";
-import NovoModal from "../components/NovoModal"; // ✅ importado
+import NovoModal from "../components/NovoModal"; // se estiver usando também
 import "../assets/Lancamentos.css";
 
 const Lancamentos = () => {
   const [lancamentos, setLancamentos] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [modalAberto, setModalAberto] = useState(false);
-  const [novoModalAberto, setNovoModalAberto] = useState(false); // ✅ novo estado
   const [lancamentoSelecionado, setLancamentoSelecionado] = useState(null);
+  const [novoModalAberto, setNovoModalAberto] = useState(false);
   const itensPorPagina = 15;
 
   useEffect(() => {
+    buscarLancamentos();
+  }, []);
+
+  const buscarLancamentos = () => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     if (usuario?.id) {
       authService.buscarLancamentosPorUsuario(usuario.id)
         .then(res => setLancamentos(res.data))
         .catch(err => console.error("Erro ao buscar lançamentos", err));
     }
-  }, []);
+  };
 
   const totalPaginas = Math.ceil(lancamentos.length / itensPorPagina);
   const lancamentosExibidos = lancamentos.slice(
@@ -38,11 +42,11 @@ const Lancamentos = () => {
   const handleExcluir = async (id) => {
     if (window.confirm("Deseja realmente excluir este lançamento?")) {
       try {
-        await authService.delet(id);
+        await authService.deletarGasto(id); // ✅ nova função específica
         setLancamentos(lancamentos.filter(l => l.id !== id));
       } catch (error) {
         alert("Erro ao excluir lançamento.");
-        console.error(error);
+        console.error("Erro ao excluir gasto:", error);
       }
     }
   };
@@ -72,17 +76,10 @@ const Lancamentos = () => {
     }
   };
 
-  // ✅ Salva novo lançamento e recarrega a lista
-  const handleSalvarNovo = async (idUsuario, novoGasto) => {
-    try {
-      await authService.cadastrarGasto(idUsuario, novoGasto);
-      const res = await authService.buscarLancamentosPorUsuario(idUsuario);
-      setLancamentos(res.data);
-      setNovoModalAberto(false);
-    } catch (error) {
-      alert("Erro ao cadastrar novo lançamento.");
-      console.error(error);
-    }
+  const categoriaMapeada = {
+    NECESSIDADES: "Necessidade",
+    DESEJOS: "Desejo",
+    INVESTIMENTO_E_POUPANCA: "Investimento/Poupança"
   };
 
   return (
@@ -106,26 +103,18 @@ const Lancamentos = () => {
             </tr>
           </thead>
           <tbody>
-            {lancamentosExibidos.map((item) => {
-              const categoriaMapeada = {
-                NECESSIDADES: "Necessidade",
-                DESEJOS: "Desejo",
-                INVESTIMENTO_E_POUPANCA: "Investimento/Poupança"
-              };
-
-              return (
-                <tr key={item.id}>
-                  <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-                  <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
-                  <td>{item.subcategoria}</td>
-                  <td>{item.dataHora}</td>
-                  <td className="acoes">
-                    <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
-                    <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
-                  </td>
-                </tr>
-              );
-            })}
+            {lancamentosExibidos.map((item) => (
+              <tr key={item.id}>
+                <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
+                <td>{item.subcategoria}</td>
+                <td>{item.dataHora}</td>
+                <td className="acoes">
+                  <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
+                  <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
@@ -136,6 +125,7 @@ const Lancamentos = () => {
         </div>
       </div>
 
+      {/* Modal de edição */}
       {modalAberto && (
         <EditarModal
           lancamento={lancamentoSelecionado}
@@ -144,10 +134,21 @@ const Lancamentos = () => {
         />
       )}
 
+      {/* Modal de novo lançamento (opcional) */}
       {novoModalAberto && (
         <NovoModal
           onClose={() => setNovoModalAberto(false)}
-          onSalvarNovo={handleSalvarNovo}
+          onSalvarNovo={(idUsuario, novoGasto) => {
+            authService.cadastrarGasto(idUsuario, novoGasto)
+              .then(() => {
+                buscarLancamentos();
+                setNovoModalAberto(false);
+              })
+              .catch(err => {
+                console.error("Erro ao cadastrar gasto:", err);
+                alert("Erro ao cadastrar novo lançamento.");
+              });
+          }}
         />
       )}
     </Layout>
