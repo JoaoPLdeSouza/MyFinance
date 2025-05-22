@@ -41,6 +41,12 @@ const buscarLancamentosPorUsuario = (idUsuario) => {
   });
 };
 
+const alterarGasto = (id, gasto) => {
+  return axios.put(`${API_URL}/gasto/alterar`, gasto, {
+    params: { id }
+  });
+};
+
 const authService = {
   login,
   register,
@@ -49,7 +55,8 @@ const authService = {
   delet,
   alterarRendimento,
   alterarEmail,
-  buscarLancamentosPorUsuario
+  buscarLancamentosPorUsuario,
+  alterarGasto,
 };
 
 export default authService;

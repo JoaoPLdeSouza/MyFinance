@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
+import EditarModal from "../components/EditarModal"; // ✅ necessário para o modal
 import "../assets/Lancamentos.css";
 
 const Lancamentos = () => {
   const [lancamentos, setLancamentos] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [lancamentoSelecionado, setLancamentoSelecionado] = useState(null);
   const itensPorPagina = 15;
 
   useEffect(() => {
@@ -42,6 +45,33 @@ const Lancamentos = () => {
     }
   };
 
+  // ✅ Abre o modal com o lançamento atual
+  const abrirModal = (lancamento) => {
+    setLancamentoSelecionado(lancamento);
+    setModalAberto(true);
+  };
+
+  // ✅ Salva alterações feitas no modal
+  const salvarAlteracoes = async (lancamentoEditado) => {
+    try {
+      await authService.alterarGasto(lancamentoEditado.id, {
+        valor: lancamentoEditado.valor,
+        categoria: lancamentoEditado.categoria,
+        subcategoria: lancamentoEditado.subcategoria,
+        dataHora: lancamentoEditado.dataHora,
+      });
+
+      setLancamentos(prev =>
+        prev.map(item => item.id === lancamentoEditado.id ? lancamentoEditado : item)
+      );
+
+      setModalAberto(false);
+    } catch (error) {
+      console.error("Erro ao salvar alteração:", error);
+      alert("Erro ao salvar alteração no lançamento.");
+    }
+  };
+
   return (
     <Layout>
       <div className="lancamentos-container">
@@ -61,18 +91,26 @@ const Lancamentos = () => {
             </tr>
           </thead>
           <tbody>
-            {lancamentosExibidos.map((item) => (
-              <tr key={item.id}>
-                <td>R$ {item.valor.toFixed(2)}</td>
-                <td>{item.categoria}</td>
-                <td>{item.subcategoria}</td>
-                <td>{item.dataHora}</td>
-                <td className="acoes">
-                  <button className="editar">Editar</button>
-                  <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
-                </td>
-              </tr>
-            ))}
+            {lancamentosExibidos.map((item) => {
+              const categoriaMapeada = {
+                NECESSIDADES: "Necessidade",
+                DESEJOS: "Desejo",
+                INVESTIMENTO_E_POUPANCA: "Investimento/Poupança"
+              };
+
+              return (
+                <tr key={item.id}>
+                  <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                  <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
+                  <td>{item.subcategoria}</td>
+                  <td>{item.dataHora}</td>
+                  <td className="acoes">
+                    <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
+                    <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
@@ -82,6 +120,15 @@ const Lancamentos = () => {
           <button onClick={() => mudarPagina(paginaAtual + 1)} disabled={paginaAtual === totalPaginas}>Próxima</button>
         </div>
       </div>
+
+      {/* ✅ Modal de edição */}
+      {modalAberto && (
+        <EditarModal
+          lancamento={lancamentoSelecionado}
+          onClose={() => setModalAberto(false)}
+          onSave={salvarAlteracoes}
+        />
+      )}
     </Layout>
   );
 };
