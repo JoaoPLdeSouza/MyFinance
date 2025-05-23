@@ -91,6 +91,7 @@ const Home = () => {
           </div>
         </div>
 
+        <div className="dashboard-title">Gráficos</div>
 
         <div className="dashboard-grid">
           {/* Gráfico 1: Pizza geral */}
@@ -127,7 +128,7 @@ const Home = () => {
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
-                colors: ["#007bff"],
+                colors: ["#dc3545"],
               }}
             />
           </div>
@@ -147,7 +148,7 @@ const Home = () => {
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
-                colors: ["#dc3545"],
+                colors: ["#007bff"],
               }}
             />
           </div>
