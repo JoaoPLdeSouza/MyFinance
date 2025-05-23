@@ -127,7 +127,7 @@ const Home = () => {
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
-                colors: ["#dc3545"],
+                colors: ["#007bff"],
               }}
             />
           </div>
@@ -147,7 +147,7 @@ const Home = () => {
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
-                colors: ["#007bff"],
+                colors: ["#dc3545"],
               }}
             />
           </div>
