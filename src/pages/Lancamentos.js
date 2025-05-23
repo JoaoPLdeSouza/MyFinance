@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
 import EditarModal from "../components/EditarModal";
-import NovoModal from "../components/NovoModal"; // se estiver usando também
+import NovoModal from "../components/NovoModal";
 import "../assets/Lancamentos.css";
 
 const Lancamentos = () => {
@@ -12,6 +12,7 @@ const Lancamentos = () => {
   const [modalAberto, setModalAberto] = useState(false);
   const [lancamentoSelecionado, setLancamentoSelecionado] = useState(null);
   const [novoModalAberto, setNovoModalAberto] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState(null); // 🆕
   const itensPorPagina = 15;
 
   useEffect(() => {
@@ -39,15 +40,22 @@ const Lancamentos = () => {
     }
   };
 
-  const handleExcluir = async (id) => {
-    if (window.confirm("Deseja realmente excluir este lançamento?")) {
-      try {
-        await authService.deletarGasto(id); // ✅ nova função específica
-        setLancamentos(lancamentos.filter(l => l.id !== id));
-      } catch (error) {
-        alert("Erro ao excluir lançamento.");
-        console.error("Erro ao excluir gasto:", error);
-      }
+  const confirmarExclusao = (id) => {
+    setIdParaExcluir(id);
+  };
+
+  const cancelarExclusao = () => {
+    setIdParaExcluir(null);
+  };
+
+  const excluirConfirmado = async () => {
+    try {
+      await authService.deletarGasto(idParaExcluir);
+      setLancamentos(lancamentos.filter(l => l.id !== idParaExcluir));
+      setIdParaExcluir(null);
+    } catch (error) {
+      alert("Erro ao excluir lançamento.");
+      console.error("Erro ao excluir gasto:", error);
     }
   };
 
@@ -111,7 +119,7 @@ const Lancamentos = () => {
                 <td>{item.dataHora}</td>
                 <td className="acoes">
                   <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
-                  <button className="excluir" onClick={() => handleExcluir(item.id)}>Excluir</button>
+                  <button className="excluir" onClick={() => confirmarExclusao(item.id)}>Excluir</button>
                 </td>
               </tr>
             ))}
@@ -134,7 +142,7 @@ const Lancamentos = () => {
         />
       )}
 
-      {/* Modal de novo lançamento (opcional) */}
+      {/* Modal de novo lançamento */}
       {novoModalAberto && (
         <NovoModal
           onClose={() => setNovoModalAberto(false)}
@@ -150,6 +158,19 @@ const Lancamentos = () => {
               });
           }}
         />
+      )}
+
+      {/* Popup de confirmação de exclusão */}
+      {idParaExcluir !== null && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <p>Tem certeza que deseja excluir este lançamento?</p>
+            <div className="popup-buttons">
+              <button className="btn-confirmar" onClick={excluirConfirmado}>Confirmar</button>
+              <button className="btn-cancelar" onClick={cancelarExclusao}>Cancelar</button>
+            </div>
+          </div>
+        </div>
       )}
     </Layout>
   );
