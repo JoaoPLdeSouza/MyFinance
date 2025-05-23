@@ -73,18 +73,14 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
     }
   };
 
-  const dataFormatada = lancamento.dataHora
-    ? new Date(lancamento.dataHora).toLocaleDateString("pt-BR")
-    : "—";
-
   return (
     <div className="modal-overlay">
       <div className="modal">
         <h3>Editar Lançamento</h3>
 
-        <p><strong>Data:</strong> {dataFormatada}</p>
+        <p><strong>Data:</strong> {lancamento.dataHora}</p>
 
-        <label>Valor:</label>
+        <label><br></br>Valor:</label>
         <input
           type="text"
           inputMode="numeric"

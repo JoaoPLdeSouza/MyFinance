@@ -5,7 +5,8 @@ const API_URL = "http://localhost:9087";
 
 const login = async ({ email, senha }) => {
   return axios.post(`${API_URL}/login`, { email, senha }, {
-    headers: { "Content-Type": "application/json" }
+  headers: { "Content-Type": "application/json" },
+  timeout: 5000 // 5 segundos
   });
 };
 
@@ -36,7 +37,7 @@ const alterarEmail = (id, email, senha) => {
 };
 
 const buscarLancamentosPorUsuario = (idUsuario) => {
-  return axios.get(`${API_URL}/gasto/usuario/all`, {
+  return axios.get(`${API_URL}/gasto/buscar/categoria`, {
     params: { idUsuario }
   });
 };
