@@ -1,110 +1,113 @@
 .lancamentos-container {
-  min-height: 80vh; /* mantém altura mínima */
-  padding: 20px;
+  /* O padding-top para o Header e o respiro é tratado no Layout.css. */
+  /* Este padding é para espaçamento interno do conteúdo de Lançamentos. */
+  padding: 30px; /* Aumentado de 20px para 30px para mais espaço */
   background-color: #f7f9fc;
   border-radius: 12px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* permite rolar se necessário */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-  
-  .header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .search-bar {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  
-  .lancamentos-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .lancamentos-table th,
-  .lancamentos-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .lancamentos-table th {
-    background-color: #f0f6ff;
-    color: #2c3e50;
-  }
-  
-  .acoes button {
-    margin-right: 6px;
-    padding: 6px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .visualizar {
-    background-color: #2ecc71;
-    color: white;
-  }
-  
-  .editar {
-    background-color: #f39c12;
-    color: white;
-  }
-  
-  .excluir {
-    background-color: #e74c3c;
-    color: white;
-  }
-  
-  .novo-button {
-    padding: 10px 16px;
-    background-color: #4e8de3;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .novo-button:hover {
-    background-color: #6cc1f0;
-  }
-  
-  .paginacao {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
-    gap: 10px;
-  }
-  
-  .paginacao button {
-    padding: 6px 12px;
-    border: none;
-    background-color: #4e8de3;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .paginacao button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .paginacao span {
-    font-size: 14px;
-  }
-  
-  /* Popup overlay */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.lancamentos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px; /* Adicionado para separar a tabela da paginação */
+}
+
+.lancamentos-table th,
+.lancamentos-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.lancamentos-table th {
+  background-color: #f0f6ff;
+  color: #2c3e50;
+}
+
+.acoes button {
+  margin-right: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.visualizar {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.editar {
+  background-color: #f39c12;
+  color: white;
+}
+
+.excluir {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.novo-button {
+  padding: 10px 16px;
+  background-color: #4e8de3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.novo-button:hover {
+  background-color: #6cc1f0;
+}
+
+.paginacao {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto; /* Empurra a paginação para o final do container */
+  gap: 10px;
+}
+
+.paginacao button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #4e8de3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.paginacao button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.paginacao span {
+  font-size: 14px;
+}
+
+/* Popup overlay */
 .popup-overlay {
   position: fixed;
   top: 0;

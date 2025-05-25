@@ -1,14 +1,54 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #4e8de3, #6cc1f0);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 .layout {
   display: flex;
+  flex: 1;
+  width: 100%;
 }
 
 .main-content {
   flex: 1;
   transition: margin-left 0.3s ease;
-  padding-top: 100px; /* Espaço reservado para o header fixo */
+  margin-top: 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Mantém a rolagem ativa */
+  height: calc(100vh - 60px);
+
+  /* --- Esconder a Barra de Rolagem (WebKit) --- */
+  &::-webkit-scrollbar {
+    width: 0px; /* Esconde a barra de rolagem vertical */
+    height: 0px; /* Esconde a barra de rolagem horizontal */
+    background: transparent; /* Garante que não haja cor de fundo visível */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Opcional: Garante que a trilha seja transparente */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent; /* Opcional: Garante que a alça seja transparente */
+  }
+
+  /* Para Firefox (mais limitado): */
+  scrollbar-width: none; /* 'none' para esconder (Firefox) */
+  scrollbar-color: transparent transparent; /* 'thumb color' 'track color' (Firefox) */
 }
 
 .page-content {
-  padding: 20px;
-  min-height: calc(100vh - 60px);
+  padding: 20px; /* Mantém o padding padrão do conteúdo da página */
+  flex-grow: 1;
 }

@@ -1,9 +1,13 @@
 .home-container {
-  padding-top: 170px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 40px;
+  /* O padding-top para o Header e o respiro é tratado no Layout.css. */
+  /* Este padding é para espaçamento interno do conteúdo da Home. */
+  padding: 0; /* Removendo padding-top para evitar dupla contagem */
+  /* O padding deve vir do .page-content no Layout.css */
+  /* Isso garante que o padding seja consistente em todas as páginas */
   background: transparent;
+  flex-grow: 1; /* Permite que o container da Home se expanda e preencha o espaço */
+  display: flex;
+  flex-direction: column; /* Para organizar os elementos da Home verticalmente */
 }
 
 .home-header {
@@ -50,6 +54,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
   padding: 0 40px;
+  flex-grow: 1; /* Para que a grade de dashboards também possa crescer */
 }
 
 .chart-card {
@@ -65,14 +70,4 @@
   justify-content: center;
   align-items: center;
   padding: 0; /* reduz o padding interno */
-}
-
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: linear-gradient(135deg, #4e8de3, #6cc1f0);
-  background-attachment: fixed;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  min-height: 100%;
 }
