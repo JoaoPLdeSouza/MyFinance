@@ -69,9 +69,7 @@ const Header = ({ toggleSidebar }) => {
 
           {showMenu && (
             <div className="config-menu">
-              <button onClick={() => goTo("/config")}>Alterar Senha</button>
-              <button onClick={() => goTo("/alterar-rendimento")}>Alterar Rendimento</button>
-              <button onClick={() => goTo("/alterar-email")}>Alterar E-mail</button>
+              <button onClick={() => goTo("/config")}>Meu perfil</button>
               <button onClick={() => setShowModal(true)} className="deletar-opcao">Deletar Conta</button>
             </div>
           )}

@@ -1,0 +1,94 @@
+/* src/assets/Popup.css */
+
+.modal-overlay {
+  position: fixed; /* Fixed position relative to the viewport */
+  top: 0;
+  left: 0; /* Starts from the very left of the viewport */
+  width: 100vw; /* Takes full viewport width */
+  height: 100vh; /* Takes full viewport height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;   /* Center vertically */
+  z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.popup {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px; /* Max width for the popup content */
+  text-align: center;
+  /* margin-left: auto; margin-right: auto; // Already handled by flexbox justify-content: center */
+}
+
+.popup h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.popup form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.popup input[type="email"],
+.popup input[type="number"],
+.popup input[type="password"] {
+  width: calc(100% - 24px); /* Account for padding */
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.popup input:focus {
+  border-color: #007bff;
+}
+
+.popup button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 5px; /* Space between buttons */
+}
+
+.popup button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+}
+
+.popup button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.popup button[type="button"] { /* Cancel button */
+  background-color: #e74c3c; /* Changed to #e74c3c */
+  color: white;
+}
+
+.popup button[type="button"]:hover {
+  background-color: #c0392b; /* A slightly darker red for hover effect */
+}
+
+.popup-message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: green;
+}
+
+/* Optional: Styling for read-only input in other popups */
+.popup input.read-only-input {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 0.8;
+}

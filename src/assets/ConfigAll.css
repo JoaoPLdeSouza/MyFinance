@@ -1,0 +1,119 @@
+/* src/assets/ConfigAll.css - Simplified Profile Page */
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Add this back to vertically center the card if there's extra space */
+  padding: 40px 20px;
+  min-height: calc(100vh - 100px); /* Adjust based on header, ensuring it takes full height. You might need to experiment with this value based on your actual header height. */
+  /* REMOVED: background-color: #f0f2f5; */ /* This was causing the extra white background */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+.profile-card-simplified {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px; /* Adjusted max-width for the simpler layout */
+  padding: 25px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between each info item */
+}
+
+.profile-header-simplified {
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center; /* Center the header */
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribute items with space in between */
+  padding-bottom: 10px;
+  border-bottom: 1px dotted #eee; /* Dotted line separator */
+}
+
+.info-item:last-child {
+  border-bottom: none; /* No border for the last item */
+  padding-bottom: 0;
+}
+
+.info-label {
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+  flex-basis: 120px; /* Fixed width for labels */
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333;
+  flex-grow: 1; /* Allow value to take available space */
+  text-align: left; /* Align value to the left */
+  /* For 'Nome' field, if it's a link, style it */
+  text-decoration: none; /* Remove underline by default */
+  color: #333; /* Default text color */
+}
+
+.info-value.link { /* New class for the 'Nome' if you want it to look clickable */
+    color: #007bff; /* Blue color for links */
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.edit-button-simplified {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-left: 15px; /* Space between value and button */
+  flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.edit-button-simplified:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .profile-card-simplified {
+    padding: 20px 20px;
+    margin: 0 10px; /* Add some margin on very small screens */
+  }
+
+  .profile-header-simplified {
+    font-size: 22px;
+  }
+
+  .info-item {
+    flex-direction: column; /* Stack label, value, and button on small screens */
+    align-items: flex-start; /* Align stacked items to the left */
+  }
+
+  .info-label {
+    width: 100%; /* Label takes full width */
+    margin-bottom: 5px; /* Space below label */
+  }
+
+  .info-value {
+    width: 100%; /* Value takes full width */
+    margin-bottom: 10px; /* Space below value before button */
+  }
+
+  .edit-button-simplified {
+    margin-left: 0; /* Remove left margin when stacked */
+    width: 100%; /* Make button full width */
+  }
+}
