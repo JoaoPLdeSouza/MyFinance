@@ -67,6 +67,20 @@ const deletarGasto = (id) => {
   });
 };
 
+const gerarPlano = (idUsuario) => {
+  // Conforme o screenshot do Swagger, o endpoint é POST /plano
+  // e o idUsuario é passado como um parâmetro de query (?idUsuario=1)
+  return axios.post(`${API_URL}/plano`, null, { // null para o corpo, já que o idUsuario vai no params
+    params: { idUsuario }
+  });
+};
+
+const buscarPlanosPorUsuario = (idUsuario) => {
+  return axios.get(`${API_URL}/plano/usuario`, {
+    params: { idUsuario }
+  });
+};
+
 // Export all the functions
 const authService = {
   login,
@@ -79,7 +93,9 @@ const authService = {
   buscarLancamentosPorUsuario,
   alterarGasto,
   cadastrarGasto,
-  deletarGasto
+  deletarGasto,
+  gerarPlano,
+  buscarPlanosPorUsuario
 };
 
 export default authService;

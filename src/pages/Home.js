@@ -91,8 +91,6 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="dashboard-title">Gráficos</div>
-
         <div className="dashboard-grid">
           {/* Gráfico 1: Pizza geral */}
           <div className="chart-card">
@@ -124,7 +122,7 @@ const Home = () => {
                 ...agruparSubcategorias(gastos, "NECESSIDADES")
               ]}
               options={{
-                title: "Necessidades por Subcategoria",
+                title: "Necessidades",
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
@@ -144,7 +142,7 @@ const Home = () => {
                 ...agruparSubcategorias(gastos, "DESEJOS")
               ]}
               options={{
-                title: "Desejos por Subcategoria",
+                title: "Desejos",
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },
@@ -164,7 +162,7 @@ const Home = () => {
                 ...agruparSubcategorias(gastos, "INVESTIMENTO_E_POUPANCA")
               ]}
               options={{
-                title: "Investimentos/Poupança por Subcategoria",
+                title: "Investimentos/Poupança",
                 legend: { position: "none" },
                 bars: "horizontal",
                 hAxis: { format: "currency" },

@@ -27,9 +27,9 @@ const Sidebar = ({ isOpen }) => {
 
         {/* Link para a página IA com ícone e texto */}
         <li>
-          <Link to="/ia">
+          <Link to="/planos">
             <FaRobot className="sidebar-icon" />
-            <span className="link-text">IA</span>
+            <span className="link-text">Planos</span>
           </Link>
         </li>
       </ul>
