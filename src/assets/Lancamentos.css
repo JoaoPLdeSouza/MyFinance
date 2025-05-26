@@ -1,7 +1,9 @@
+/* src/assets/Lancamentos.css */
+
+/* --- SEUS ESTILOS EXISTENTES --- */
+
 .lancamentos-container {
-  /* O padding-top para o Header e o respiro é tratado no Layout.css. */
-  /* Este padding é para espaçamento interno do conteúdo de Lançamentos. */
-  padding: 30px; /* Aumentado de 20px para 30px para mais espaço */
+  padding: 30px;
   background-color: #f7f9fc;
   border-radius: 12px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -17,18 +19,15 @@
   margin-bottom: 20px;
 }
 
-.search-bar {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.header-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .lancamentos-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px; /* Adicionado para separar a tabela da paginação */
+  margin-bottom: 20px;
 }
 
 .lancamentos-table th,
@@ -43,18 +42,22 @@
   color: #2c3e50;
 }
 
+.acoes { /* Adicionado para controlar o layout dos botões na coluna de ações */
+  display: flex; /* Usa flexbox para os botões */
+  gap: 6px; /* Espaçamento entre os botões */
+  flex-wrap: wrap; /* Permite que os botões quebrem a linha se não houver espaço suficiente */
+  justify-content: flex-start; /* Alinha os botões ao início */
+  align-items: center;
+}
+
 .acoes button {
-  margin-right: 6px;
+  /* margin-right: 6px; */ /* Removido, pois gap já cuida do espaçamento */
   padding: 6px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
-}
-
-.visualizar {
-  background-color: #2ecc71;
-  color: white;
+  white-space: nowrap; /* Impede que o texto do botão quebre em várias linhas */
 }
 
 .editar {
@@ -81,11 +84,26 @@
   background-color: #6cc1f0;
 }
 
+.toggle-filtros-button {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-filtros-button:hover {
+  background-color: #0056b3;
+}
+
 .paginacao {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: auto; /* Empurra a paginação para o final do container */
+  margin-top: auto;
   gap: 10px;
 }
 
@@ -163,4 +181,81 @@
 
 .popup-buttons .btn-confirmar:hover {
   background-color: #ffb3b3;
+}
+
+/* ESTILOS PARA OS FILTROS - AGORA COM SELECT */
+.filter-row td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.filter-row input,
+.filter-row select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background-color: white;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20512%22%3E%3Cpath%20fill%3D%22%23343a40%22%20d%3D%22M64%20192L0%20256h256L192%20192z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 30px;
+}
+
+/* Ajusta as larguras das colunas de filtro na thead */
+.lancamentos-table th:nth-child(1), /* Valor */
+.lancamentos-table td:nth-child(1) {
+  width: 15%;
+  min-width: 100px;
+}
+
+.lancamentos-table th:nth-child(2), /* Categoria */
+.lancamentos-table td:nth-child(2) {
+  width: 20%;
+  min-width: 150px;
+}
+
+.lancamentos-table th:nth-child(3), /* Subcategoria */
+.lancamentos-table td:nth-child(3) {
+  width: 20%;
+  min-width: 150px;
+}
+
+.lancamentos-table th:nth-child(4), /* Data */
+.lancamentos-table td:nth-child(4) {
+  width: 15%;
+  min-width: 120px;
+}
+
+.lancamentos-table th:nth-child(5), /* Ações */
+.lancamentos-table td:nth-child(5) {
+  width: 18%; /* Aumentado para dar mais espaço */
+  min-width: 160px; /* Aumentado significativamente para acomodar os botões */
+}
+
+
+.filter-row input::placeholder {
+  color: #888;
+}
+
+.filter-row input:focus,
+.filter-row select:focus {
+  border-color: #4e8de3;
+  box-shadow: 0 0 0 0.2rem rgba(78, 141, 227, 0.25);
+  outline: none;
+}
+
+/* Mensagem quando não há resultados após filtrar */
+.no-results-message {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-style: italic;
 }

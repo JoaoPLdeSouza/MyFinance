@@ -1,73 +1,179 @@
+/* src/assets/Home.css */
+
+/* Importa uma fonte moderna do Google Fonts (exemplo: Inter) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Reset básico e box-sizing para um layout mais previsível */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif; /* Aplica a nova fonte */
+  margin: 0;
+  padding: 0;
+  /* Removido: background-color: #f0f2f5; para que o fundo do Layout/body seja visível */
+}
+
+/* O Layout.css provavelmente tem padding para o conteúdo principal,
+   então o home-container pode não precisar de padding-top extra. */
 .home-container {
-  /* O padding-top para o Header e o respiro é tratado no Layout.css. */
-  /* Este padding é para espaçamento interno do conteúdo da Home. */
-  padding: 0; /* Removendo padding-top para evitar dupla contagem */
-  /* O padding deve vir do .page-content no Layout.css */
-  /* Isso garante que o padding seja consistente em todas as páginas */
-  background: transparent;
-  flex-grow: 1; /* Permite que o container da Home se expanda e preencha o espaço */
+  padding: 40px; /* Adiciona padding geral para o conteúdo */
+  background-color: transparent; /* Torna o fundo do container transparente */
+  flex-grow: 1;
   display: flex;
-  flex-direction: column; /* Para organizar os elementos da Home verticalmente */
+  flex-direction: column;
 }
 
 .home-header {
-  font-size: 32px;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 40px;
+  font-size: 36px; /* Aumenta o tamanho do título principal */
+  font-weight: 700; /* Mais negrito */
+  color: #34495e; /* Uma cor mais escura para o título */
+  margin-bottom: 50px; /* Mais espaço abaixo do título */
   text-align: center;
+  letter-spacing: -0.5px; /* Pequeno ajuste no espaçamento de letras */
 }
 
 .top-cards {
   display: flex;
+  flex-wrap: wrap; /* Permite que os cartões quebrem a linha em telas menores */
   justify-content: center;
   gap: 30px;
   margin-bottom: 60px;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;  /* Mantém o fundo branco para os cartões de estatísticas */
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px; /* Bordas mais arredondadas */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Sombra mais suave e proeminente */
   text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: #4e8de3;
-  width: 280px;
-  min-height: 120px;
+  width: 300px; /* Ligeiramente mais largo */
+  min-height: 130px; /* Ligeiramente mais alto */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição suave ao interagir */
 }
 
-.dashboard-title {
-  font-size: 24px;
-  text-align: center;
-  color: #2c3e50;
-  margin-bottom: 30px;
+.stat-card:hover {
+  transform: translateY(-5px); /* Efeito de "levantar" ao passar o mouse */
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-label {
+  font-size: 18px; /* Tamanho da fonte para o rótulo */
+  font-weight: 500; /* Peso médio para o rótulo */
+  color: #6c757d; /* Cor mais suave para o rótulo */
+  margin-bottom: 8px; /* Espaço entre o rótulo e o valor */
+}
+
+.card-value {
+  font-size: 28px; /* Tamanho da fonte para o valor */
+  font-weight: 700; /* Bem negrito para o valor */
+  color: #2c3e50; /* Cor escura para o valor */
+  letter-spacing: -0.5px;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  padding: 0 40px;
-  flex-grow: 1; /* Para que a grade de dashboards também possa crescer */
+  /* Ajuste para que os gráficos se expandam mais */
+  grid-template-columns: repeat(auto-fit, minmax(calc(50% - 30px), 1fr)); /* 2 colunas, ocupando quase 50% cada com gap */
+  gap: 30px; /* Espaço entre os gráficos */
+  padding: 0 20px; /* Padding lateral */
+  flex-grow: 1;
 }
 
 .chart-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  height: 400px;
+  background: #ffffff; /* Mantém o fundo branco para os cartões dos gráficos */
+  padding: 25px; /* Aumenta o padding interno para o conteúdo */
+  border-radius: 12px; /* Bordas arredondadas */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Sombra suave */
+  height: 500px; /* Aumenta a altura dos gráficos para melhor visualização e espaço para texto */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0; /* reduz o padding interno */
+  flex-direction: column; /* Organiza título, descrição e gráfico verticalmente */
+  align-items: flex-start; /* Alinha o conteúdo à esquerda */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.chart-title {
+  font-size: 22px; /* Título do gráfico */
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 10px; /* Espaço entre título e descrição */
+  text-align: left; /* Garante alinhamento à esquerda */
+  width: 100%; /* Ocupa a largura total do card */
+}
+
+.chart-description {
+  font-size: 15px; /* Descrição do gráfico */
+  color: #6c757d;
+  margin-bottom: 20px; /* Espaço entre descrição e o gráfico */
+  text-align: left; /* Garante alinhamento à esquerda */
+  width: 100%; /* Ocupa a largura total do card */
+  line-height: 1.5; /* Espaçamento entre linhas */
+}
+
+/* Garante que o Google Chart use a largura e altura restantes do card */
+.chart-card > div:last-child { /* Seleciona o div que contém o gráfico do Google Charts */
+  flex-grow: 1; /* Permite que o gráfico preencha o espaço restante */
+  width: 100%; /* Garante que o gráfico ocupe toda a largura disponível */
+}
+
+/* Ajustes para a responsividade em telas menores */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Uma coluna em telas menores */
+    padding: 0 15px;
+  }
+
+  .top-cards {
+    flex-direction: column; /* Cartões empilhados em telas menores */
+    align-items: center;
+    gap: 20px;
+  }
+
+  .stat-card {
+    width: 90%; /* Ocupa mais largura em telas menores */
+    max-width: 350px; /* Limita a largura máxima */
+  }
+
+  .chart-card {
+    height: 480px; /* Ajusta a altura dos cards em telas menores */
+  }
+}
+
+@media (max-width: 768px) {
+  .home-header {
+    font-size: 30px;
+    margin-bottom: 40px;
+  }
+
+  .home-container {
+    padding: 20px;
+  }
+
+  .chart-card {
+    padding: 20px; /* Reduz um pouco o padding interno em telas muito pequenas */
+  }
+
+  .chart-title {
+    font-size: 20px;
+  }
+
+  .chart-description {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 15px;
+  }
 }
