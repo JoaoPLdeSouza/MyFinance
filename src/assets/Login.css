@@ -13,6 +13,7 @@ body {
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #4e8de3, #6cc1f0);
+  overflow: hidden; /* Garante que não haverá barras de rolagem desnecessárias */
 }
 
 /* Contêiner do login */
@@ -21,16 +22,18 @@ body {
   text-align: center;
   width: 150%; /* Aumenta a largura proporcionalmente */
   max-width: 500px; /* Novo tamanho máximo */
-  padding: 50px; /* Ajustado para manter proporcionalidade */
+  padding: 30px 50px; /* Diminuído o padding vertical para compactar a altura */
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-top: 0; /* REMOVIDO o margin-top para permitir a centralização do body */
+  margin-bottom: 0; /* Garante que não haverá margin-bottom empurrando para cima */
 }
 
 /* Círculo superior para o logo */
 .login-image-container {
   position: absolute;
-  top: -80px; /* Posicionado para não invadir o título */
+  top: -85px; /* ***AJUSTE AQUI: Subido para não tampar a palavra "Login"*** */
   left: 50%;
   transform: translateX(-50%);
   width: 120px;
@@ -39,77 +42,317 @@ body {
   border-radius: 50%;
   border: 5px solid #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Estilo para a imagem dentro do círculo */
+.logo-image {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 /* Estilo do título */
 .login-title {
-  font-size: 35px; /* Tamanho ajustado */
+  font-size: 35px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 40px; /* Espaçamento maior */
+  margin-top: 15px; /* Espaçamento menor após o logo para compactar */
+  margin-bottom: 30px; /* Espaçamento menor para compactar */
 }
 
 /* Estilo do formulário */
 .input-group {
-  margin-bottom: 25px; /* Ajuste no espaçamento */
+  margin-bottom: 20px; /* Diminuído para compactar a altura */
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px; /* Diminuído o espaçamento */
+  font-weight: bold;
+  color: #555;
+  font-size: 16px;
 }
 
 .input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .icon {
   position: absolute;
   left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22px; /* Tamanho do ícone ajustado */
+  font-size: 22px;
   color: #555;
+  z-index: 1;
 }
 
 .input-field {
   width: 100%;
-  padding: 12px 12px 12px 45px; /* Espaço ajustado para o ícone */
+  padding: 10px 12px 10px 45px; /* Diminuído o padding vertical para compactar */
   border: 2px solid #e1e1e1;
   border-radius: 8px;
   background-color: #f7f7f7;
-  font-size: 18px; /* Ajuste do tamanho da fonte */
+  font-size: 18px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .input-field:focus {
   outline: none;
   border-color: #4e8de3;
+  box-shadow: 0 0 0 3px rgba(78, 141, 227, 0.3);
+}
+
+/* Botão de alternar visibilidade da senha */
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #777;
+  z-index: 2;
+}
+
+.toggle-password:hover {
+  color: #333;
 }
 
 /* Botão de login */
 .login-button {
   width: 100%;
-  padding: 15px;
+  padding: 12px; /* Diminuído para compactar */
   background-color: #4e8de3;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 18px; /* Ajuste do tamanho da fonte */
+  font-size: 19px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
+  letter-spacing: 0.5px;
 }
 
 .login-button:hover {
-  background-color: #6cc1f0;
+  background-color: #3b7ad1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Link de registro */
 .signup-link {
-  margin-top: 20px; /* Espaçamento ajustado */
-  font-size: 16px; /* Tamanho do texto ajustado */
+  margin-top: 20px; /* Diminuído para compactar */
+  font-size: 16px;
   color: #555;
 }
 
 .signup-link a {
   color: #4e8de3;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .signup-link a:hover {
   text-decoration: underline;
+  color: #3b7ad1;
+}
+
+/* Mensagem de erro */
+p {
+  color: red;
+  margin-bottom: 12px; /* Diminuído */
+  font-size: 15px;
+}/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Corpo da página */
+body {
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4e8de3, #6cc1f0);
+  overflow: hidden; /* Garante que não haverá barras de rolagem desnecessárias */
+}
+
+/* Contêiner do login */
+.login-container {
+  position: relative;
+  text-align: center;
+  width: 150%; /* Aumenta a largura proporcionalmente */
+  max-width: 500px; /* Novo tamanho máximo */
+  padding: 30px 50px; /* Diminuído o padding vertical para compactar a altura */
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-top: 0; /* REMOVIDO o margin-top para permitir a centralização do body */
+  margin-bottom: 0; /* Garante que não haverá margin-bottom empurrando para cima */
+}
+
+/* Círculo superior para o logo */
+.login-image-container {
+  position: absolute;
+  top: -85px; /* Subido para não tampar a palavra "Login" */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  background-color: white;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Estilo para a imagem dentro do círculo */
+.logo-image {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Estilo do título */
+.login-title {
+  font-size: 35px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 15px; /* Espaçamento menor após o logo para compactar */
+  margin-bottom: 30px; /* Espaçamento menor para compactar */
+}
+
+/* Estilo do formulário */
+.input-group {
+  margin-bottom: 20px; /* Diminuído para compactar a altura */
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px; /* Diminuído o espaçamento */
+  font-weight: bold;
+  color: #555;
+  font-size: 16px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 10px;
+  font-size: 22px;
+  color: #555;
+  z-index: 1;
+  transition: color 0.3s ease; /* Adiciona transição de cor para o ícone */
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px 12px 10px 45px; /* Diminuído o padding vertical para compactar */
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+  font-size: 18px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transição para borda e sombra */
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #4e8de3;
+  box-shadow: 0 0 0 3px rgba(78, 141, 227, 0.3), 0 0 8px rgba(78, 141, 227, 0.4); /* Borda azul + Sombra suave */
+}
+
+/* Adicionar um estilo para o ícone quando o input está focado, para um efeito coeso */
+.input-field:focus + .icon {
+  color: #4e8de3; /* Muda a cor do ícone quando o input está focado */
+}
+
+/* Botão de alternar visibilidade da senha */
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #777;
+  z-index: 2;
+  transition: color 0.3s ease; /* Adiciona transição de cor para o ícone */
+}
+
+.toggle-password:hover {
+  color: #333;
+}
+
+/* Botão de login */
+.login-button {
+  width: 100%;
+  padding: 12px; /* Diminuído para compactar */
+  background-color: #4e8de3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Adicionado box-shadow na transição */
+  letter-spacing: 0.5px;
+}
+
+.login-button:hover {
+  background-color: #3b7ad1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Sombra maior no hover */
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Link de registro */
+.signup-link {
+  margin-top: 20px; /* Diminuído para compactar */
+  font-size: 16px;
+  color: #555;
+}
+
+.signup-link a {
+  color: #4e8de3;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Transição para cor e sublinhado */
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+  color: #3b7ad1;
+}
+
+/* Mensagem de erro */
+p {
+  color: red;
+  margin-bottom: 12px; /* Diminuído */
+  font-size: 15px;
 }
