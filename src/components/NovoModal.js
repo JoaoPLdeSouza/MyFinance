@@ -1,4 +1,3 @@
-// src/components/NovoModal.js
 import React, { useEffect, useState } from "react";
 import "../assets/EditarModal.css";
 
@@ -25,20 +24,34 @@ const categoriaFormatada = {
 };
 
 const NovoModal = ({ onClose, onSalvarNovo }) => {
-  const [valor, setValor] = useState("");
+  const [valor, setValor] = useState("0,00"); // Inicializa com "0,00" para formatação
   const [categoria, setCategoria] = useState("NECESSIDADES");
   const [subcategoria, setSubcategoria] = useState(categorias.NECESSIDADES[0]);
 
   useEffect(() => {
+    // Garante que a subcategoria seja a primeira da nova categoria selecionada
     setSubcategoria(categorias[categoria][0]);
   }, [categoria]);
+
+  const handleValorChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, ""); // Remove tudo que não é dígito
+    if (raw === "") raw = "000"; // Garante que sempre haja pelo menos "000" para evitar erros de slice
+    while (raw.length < 3) {
+      raw = "0" + raw; // Adiciona zeros à esquerda até ter pelo menos 3 dígitos (para centavos)
+    }
+    const inteiro = raw.slice(0, -2); // Separa a parte inteira
+    const decimal = raw.slice(-2);    // Separa a parte decimal (centavos)
+    const formatado = `${parseInt(inteiro, 10)},${decimal}`; // Formata para X,XX
+    setValor(formatado);
+  };
 
   const handleSalvar = () => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     const idUsuario = usuario?.id || usuario?.idUsuario;
 
-    if (!idUsuario || !valor || !categoria || !subcategoria) {
-      alert("Por favor, preencha todos os campos.");
+    // Validação dos campos do formulário
+    if (!valor || valor === "0,00" || !categoria || !subcategoria) {
+      alert("Por favor, preencha todos os campos e o valor deve ser maior que zero.");
       return;
     }
 
@@ -46,13 +59,13 @@ const NovoModal = ({ onClose, onSalvarNovo }) => {
     const dia = String(hoje.getDate()).padStart(2, '0');
     const mes = String(hoje.getMonth() + 1).padStart(2, '0');
     const ano = hoje.getFullYear();
-    const hojeFormatadaParaBackend = `${dia}/${mes}/${ano}`; // Formato DD/MM/AAAA
+    const hojeFormatadaParaBackend = `${dia}/${mes}/${ano}`;
 
     const novoGasto = {
-      valor: parseFloat(valor),
+      valor: parseFloat(valor.replace(",", ".")), // Converte o valor formatado para número
       categoria,
       subcategoria,
-      dataHora: hojeFormatadaParaBackend // Isso já está correto!
+      dataHora: hojeFormatadaParaBackend
     };
 
     onSalvarNovo(idUsuario, novoGasto);
@@ -65,9 +78,23 @@ const NovoModal = ({ onClose, onSalvarNovo }) => {
 
         <label>Valor:</label>
         <input
-          type="number"
+          type="text" // Alterado para text para controlar a formatação
+          inputMode="numeric" // Sugere teclado numérico em dispositivos móveis
           value={valor}
-          onChange={(e) => setValor(e.target.value)}
+          onChange={handleValorChange}
+          // Previne a movimentação do cursor e seleção
+          onKeyDown={(e) => {
+            const invalidKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+            if (invalidKeys.includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          onClick={(e) => e.preventDefault()}
+          onSelect={(e) => {
+            const len = e.target.value.length;
+            setTimeout(() => e.target.setSelectionRange(len, len), 0);
+          }}
+          onPaste={(e) => e.preventDefault()} // Previne colagem
         />
 
         <label>Categoria:</label>
