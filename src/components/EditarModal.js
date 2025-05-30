@@ -1,3 +1,4 @@
+// src/components/EditarModal.js
 import React, { useEffect, useState } from "react";
 import "../assets/EditarModal.css";
 
@@ -31,13 +32,32 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
     return `${parseInt(inteiro, 10)},${decimal}`;
   };
 
+  const formatarDataIsoParaDDMMYYYY = (isoString) => {
+    try {
+      const date = new Date(isoString);
+      if (isNaN(date.getTime())) {
+        // Se já for DD/MM/AAAA (ex: "25/05/2025") e não ISO, retorne como está
+        return isoString.includes('/') ? isoString : "Data Inválida";
+      }
+      const dia = String(date.getDate()).padStart(2, '0');
+      const mes = String(date.getMonth() + 1).padStart(2, '0');
+      const ano = date.getFullYear();
+      return `${dia}/${mes}/${ano}`; // Retorna DD/MM/AAAA
+    } catch (e) {
+      return "Data Inválida";
+    }
+  };
+
   const [valor, setValor] = useState("0,00");
   const [categoria, setCategoria] = useState(lancamento.categoria);
   const [subcategoria, setSubcategoria] = useState(lancamento.subcategoria);
+  const [dataParaBackend, setDataParaBackend] = useState(""); // Novo estado para armazenar a data no formato DD/MM/AAAA para o backend
 
   useEffect(() => {
     setValor(formatarValor(lancamento.valor));
-  }, [lancamento.valor]);
+    // Converte a data ISO original para DD/MM/AAAA para armazenar no estado e enviar ao backend
+    setDataParaBackend(formatarDataIsoParaDDMMYYYY(lancamento.dataHora));
+  }, [lancamento.valor, lancamento.dataHora]);
 
   useEffect(() => {
     const primeiraSub = categorias[categoria]?.[0] || "";
@@ -46,30 +66,26 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
 
   const handleValorChange = (e) => {
     let raw = e.target.value.replace(/\D/g, "");
-
-    // Impede o campo de ficar vazio
     if (raw === "") raw = "000";
-
     while (raw.length < 3) {
       raw = "0" + raw;
     }
-
     const inteiro = raw.slice(0, -2);
     const decimal = raw.slice(-2);
     const formatado = `${parseInt(inteiro, 10)},${decimal}`;
-
     setValor(formatado);
   };
 
   const handleSalvar = () => {
     if (valor && categoria && subcategoria) {
-      onSave({
+      const gastoEditado = {
         id: lancamento.id,
-        dataHora: lancamento.dataHora,
+        dataHora: dataParaBackend, // Envia a data que já está no formato DD/MM/AAAA
         valor: parseFloat(valor.replace(",", ".")),
         categoria,
         subcategoria
-      });
+      };
+      onSave(gastoEditado);
     }
   };
 
@@ -78,7 +94,8 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
       <div className="modal">
         <h3>Editar Lançamento</h3>
 
-        <p><strong>Data:</strong> {lancamento.dataHora}</p>
+        {/* Aqui você exibe a data formatada para o usuário */}
+        <p><strong>Data:</strong> {dataParaBackend}</p> 
 
         <label><br></br>Valor:</label>
         <input
@@ -87,21 +104,18 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
           value={valor}
           onChange={handleValorChange}
           onKeyDown={(e) => {
-            // Bloqueia teclas de movimentação, deletar, setas, etc
             const invalidKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
             if (invalidKeys.includes(e.key)) {
               e.preventDefault();
             }
           }}
-          onClick={(e) => e.preventDefault()} // impede mudar posição do cursor com clique
+          onClick={(e) => e.preventDefault()}
           onSelect={(e) => {
-            // força o cursor sempre no fim
             const len = e.target.value.length;
             setTimeout(() => e.target.setSelectionRange(len, len), 0);
           }}
-          onPaste={(e) => e.preventDefault()} // bloqueia colar
+          onPaste={(e) => e.preventDefault()}
         />
-
 
         <label>Categoria:</label>
         <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>

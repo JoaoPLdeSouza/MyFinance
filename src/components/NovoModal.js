@@ -37,15 +37,22 @@ const NovoModal = ({ onClose, onSalvarNovo }) => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     const idUsuario = usuario?.id || usuario?.idUsuario;
 
-    if (!idUsuario || !valor || !categoria || !subcategoria) return;
+    if (!idUsuario || !valor || !categoria || !subcategoria) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
 
-    const hojeFormatada = new Date().toLocaleDateString("pt-BR"); // "21/05/2025"
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    const hojeFormatadaParaBackend = `${dia}/${mes}/${ano}`; // Formato DD/MM/AAAA
 
     const novoGasto = {
       valor: parseFloat(valor),
       categoria,
       subcategoria,
-      dataHora: hojeFormatada
+      dataHora: hojeFormatadaParaBackend // Isso já está correto!
     };
 
     onSalvarNovo(idUsuario, novoGasto);

@@ -22,13 +22,9 @@ const categoriaReversaMapeada = Object.keys(categoriaMapeada).reduce((acc, key) 
 
 // A função parseDateString não será mais usada para ordenação, mas pode ser útil para o filtro de datas
 // se as datas no dropdown continuarem sendo no formato "DD/MM/AAAA".
-// Vou mantê-la e adaptar seu uso.
 const parseDateString = (dateString) => {
   if (!dateString) return null;
 
-  // Adaptação: Se a data já for ISO 8601 (como do Swagger: "2025-05-26T...Z"), new Date() a lê direto.
-  // Se for "DD/MM/AAAA", tentamos parsear.
-  // Isso cobre ambos os casos, caso a dataHora venha de fontes diferentes ou editores de texto.
   if (dateString.includes('-') && dateString.includes('T')) {
     return new Date(dateString); // Provavelmente ISO 8601
   }
@@ -49,10 +45,8 @@ const parseDateString = (dateString) => {
 // Função auxiliar para formatar a data para exibição (sempre DD/MM/AAAA)
 const formatarDataParaExibicao = (isoString) => {
   try {
-    // Tenta criar uma data a partir da string (pode ser ISO ou DD/MM/AAAA)
     const date = new Date(isoString);
     if (isNaN(date.getTime())) {
-      // Se a data for "DD/MM/AAAA", o new Date direto falha em alguns browsers, então usa parseDateString
       const parsedDate = parseDateString(isoString);
       if (parsedDate && !isNaN(parsedDate.getTime())) {
         return parsedDate.toLocaleDateString('pt-BR');
@@ -61,7 +55,6 @@ const formatarDataParaExibicao = (isoString) => {
     }
     return date.toLocaleDateString('pt-BR');
   } catch (e) {
-    console.error("Erro ao formatar data:", isoString, e);
     return "Data Inválida";
   }
 };
@@ -77,17 +70,14 @@ const Lancamentos = () => {
 
   const [filtrosVisiveis, setFiltrosVisiveis] = useState(false);
 
-  // Estados para os valores dos filtros
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroSubcategoria, setFiltroSubcategoria] = useState("");
-  const [filtroData, setFiltroData] = useState(""); // Este será a string "DD/MM/AAAA"
+  const [filtroData, setFiltroData] = useState("");
 
-  // ESTADOS PARA AS OPÇÕES EXIBIDAS NOS DROPDOWNS (DINÂMICAS)
   const [opcoesCategorias, setOpcoesCategorias] = useState([]);
   const [opcoesSubcategorias, setOpcoesSubcategorias] = useState([]);
   const [opcoesDatas, setOpcoesDatas] = useState([]);
 
-  // Estado para armazenar TODOS os lançamentos brutos (para facilitar a filtragem dinâmica)
   const [todosLancamentosOriginais, setTodosLancamentosOriginais] = useState([]);
 
   const itensPorPagina = 15;
@@ -97,32 +87,25 @@ const Lancamentos = () => {
     if (usuario?.id) {
       authService.buscarLancamentosPorUsuario(usuario.id)
         .then(res => {
-          // *** ALTERAÇÃO PRINCIPAL AQUI: ORDENAR POR ID DECRESCENTE ***
           const lancamentosOrdenados = res.data.sort((a, b) => {
-            return b.id - a.id; // Ordem decrescente de ID (maior ID primeiro)
+            return b.id - a.id;
           });
 
           setLancamentos(lancamentosOrdenados);
-          setTodosLancamentosOriginais(lancamentosOrdenados); // Armazenar dados brutos já ordenados
+          setTodosLancamentosOriginais(lancamentosOrdenados);
 
-          // Inicializa as opções de filtro com base em TODOS os lançamentos (agora ordenados)
           const categoriasIniciais = [...new Set(lancamentosOrdenados.map(item => categoriaMapeada[item.categoria] || item.categoria).filter(Boolean))].sort();
           const subcategoriasIniciais = [...new Set(lancamentosOrdenados.map(item => item.subcategoria).filter(Boolean))].sort();
           
-          // As datas para as opções do dropdown devem ser as datas formatadas para exibição,
-          // e ordenadas (aqui ainda por data para o filtro de data ter ordem lógica)
           const datasUnicasExibicao = [...new Set(lancamentosOrdenados.map(item => formatarDataParaExibicao(item.dataHora)).filter(Boolean))].sort((a, b) => {
-            // Convertemos para Date para ordenar as opções de data (ex: "25/05/2025")
-            // Revertemos para AAAA-MM-DD para criar o objeto Date
-            const partsA = a.split('/');
-            const dateA = new Date(parseInt(partsA[2]), parseInt(partsA[1]) - 1, parseInt(partsA[0]));
-            
-            const partsB = b.split('/');
-            const dateB = new Date(parseInt(partsB[2]), parseInt(partsB[1]) - 1, parseInt(partsB[0]));
-            
-            return dateB.getTime() - dateA.getTime(); // Ordem decrescente
+              const partsA = a.split('/');
+              const dateA = new Date(parseInt(partsA[2]), parseInt(partsA[1]) - 1, parseInt(partsA[0]));
+              
+              const partsB = b.split('/');
+              const dateB = new Date(parseInt(partsB[2]), parseInt(partsB[1]) - 1, parseInt(partsB[0]));
+              
+              return dateB.getTime() - dateA.getTime();
           });
-
 
           setOpcoesCategorias(categoriasIniciais);
           setOpcoesSubcategorias(subcategoriasIniciais);
@@ -130,45 +113,37 @@ const Lancamentos = () => {
         })
         .catch(err => console.error("Erro ao buscar lançamentos", err));
     }
-  }, []); // Sem dependências desnecessárias
+  }, []);
 
   useEffect(() => {
     buscarLancamentos();
   }, [buscarLancamentos]);
 
-  // Efeito para atualizar as opções de Subcategoria e Categoria com base nos filtros selecionados
   useEffect(() => {
     let filteredByCatSub = todosLancamentosOriginais;
 
-    // Se a categoria está selecionada, filtra os lançamentos por ela
     if (filtroCategoria) {
       const categoriaOriginal = categoriaReversaMapeada[filtroCategoria] || filtroCategoria;
       filteredByCatSub = filteredByCatSub.filter(item => item.categoria === categoriaOriginal);
     }
 
-    // Se a subcategoria está selecionada, filtra os lançamentos por ela
     if (filtroSubcategoria) {
       filteredByCatSub = filteredByCatSub.filter(item => item.subcategoria === filtroSubcategoria);
     }
 
-    // Gerar novas opções de subcategoria baseadas nos lançamentos filtrados pela categoria (e sub)
     const novasOpcoesSubcategorias = [...new Set(filteredByCatSub.map(item => item.subcategoria).filter(Boolean))].sort();
     setOpcoesSubcategorias(novasOpcoesSubcategorias);
 
-    // Gerar novas opções de categoria baseadas nos lançamentos filtrados pela subcategoria (e cat)
     const novasOpcoesCategorias = [...new Set(filteredByCatSub.map(item => categoriaMapeada[item.categoria] || item.categoria).filter(Boolean))].sort();
     setOpcoesCategorias(novasOpcoesCategorias);
 
   }, [filtroCategoria, filtroSubcategoria, todosLancamentosOriginais]);
 
-
-  // Lógica de FILTRAGEM PRINCIPAL (para exibição da tabela)
   const lancamentosFiltrados = lancamentos.filter((lancamento) => {
     const categoriaExibicao = categoriaMapeada[lancamento.categoria] || lancamento.categoria;
     const categoriaLower = categoriaExibicao ? categoriaExibicao.toLowerCase() : '';
     const subcategoriaLower = lancamento.subcategoria ? lancamento.subcategoria.toLowerCase() : '';
     
-    // Usar formatarDataParaExibicao para garantir que a data do lançamento seja "DD/MM/AAAA" para comparação
     const dataLancamentoFormatada = formatarDataParaExibicao(lancamento.dataHora);
 
     const matchCategoria = filtroCategoria
@@ -205,7 +180,7 @@ const Lancamentos = () => {
   const excluirConfirmado = async () => {
     try {
       await authService.deletarGasto(idParaExcluir);
-      buscarLancamentos(); // Refresca os lançamentos e, consequentemente, as opções de filtro
+      buscarLancamentos();
       setIdParaExcluir(null);
       setPaginaAtual(1);
     } catch (error) {
@@ -221,26 +196,19 @@ const Lancamentos = () => {
 
   const salvarAlteracoes = async (lancamentoEditado) => {
     try {
-      // Mapeia a categoria de volta para o formato original para a API
       const categoriaParaSalvar = categoriaReversaMapeada[lancamentoEditado.categoria] || lancamentoEditado.categoria;
-
-      // Conversão da data para ISO 8601 se o modal retornar DD/MM/AAAA
-      let dataHoraParaApi = lancamentoEditado.dataHora;
-      if (typeof lancamentoEditado.dataHora === 'string' && lancamentoEditado.dataHora.includes('/')) {
-          const [dia, mes, ano] = lancamentoEditado.dataHora.split('/');
-          // Se precisar de horário específico, EditarModal deve fornecer.
-          // Aqui, estamos criando uma data com base apenas no dia, mês e ano.
-          dataHoraParaApi = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia)).toISOString();
-      }
-
-
+      
+      // A dataHora já vem de EditarModal no formato DD/MM/AAAA.
+      // Não precisamos converter para ISO 8601 aqui.
+      const dataHoraParaApi = lancamentoEditado.dataHora; 
+      
       await authService.alterarGasto(lancamentoEditado.id, {
         valor: lancamentoEditado.valor,
-        categoria: categoriaParaSalvar, // Usar o valor original da categoria
+        categoria: categoriaParaSalvar,
         subcategoria: lancamentoEditado.subcategoria,
-        dataHora: dataHoraParaApi, // Envia a data no formato ISO 8601
+        dataHora: dataHoraParaApi, // Envia a data no formato DD/MM/AAAA
       });
-      buscarLancamentos(); // Refresca os lançamentos e as opções de filtro
+      buscarLancamentos();
       setModalAberto(false);
     } catch (error) {
       console.error("Erro ao salvar alteração:", error);
@@ -277,14 +245,14 @@ const Lancamentos = () => {
             </tr>
             {filtrosVisiveis && (
               <tr className="filter-row">
-                <td> {/* Coluna Valor sem filtro */}</td>
+                <td></td>
                 <td>
                   <select
                     value={filtroCategoria}
                     onChange={(e) => {
                       setFiltroCategoria(e.target.value);
                       setPaginaAtual(1);
-                      setFiltroSubcategoria(""); // Limpa o filtro de subcategoria ao mudar a categoria
+                      setFiltroSubcategoria("");
                     }}
                   >
                     <option value="">Todas as Categorias</option>
@@ -299,7 +267,7 @@ const Lancamentos = () => {
                     onChange={(e) => {
                       setFiltroSubcategoria(e.target.value);
                       setPaginaAtual(1);
-                      setFiltroCategoria(""); // Limpa o filtro de categoria ao mudar a subcategoria
+                      setFiltroCategoria("");
                     }}
                   >
                     <option value="">Todas as Subcategorias</option>
@@ -322,7 +290,7 @@ const Lancamentos = () => {
                     ))}
                   </select>
                 </td>
-                <td> {/* Coluna Ações sem filtro */}</td>
+                <td></td>
               </tr>
             )}
           </thead>
@@ -339,7 +307,7 @@ const Lancamentos = () => {
                   <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                   <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
                   <td>{item.subcategoria}</td>
-                  <td>{formatarDataParaExibicao(item.dataHora)}</td> {/* Usa a função auxiliar para exibir DD/MM/AAAA */}
+                  <td>{formatarDataParaExibicao(item.dataHora)}</td>
                   <td className="acoes">
                     <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
                     <button className="excluir" onClick={() => confirmarExclusao(item.id)}>Excluir</button>
@@ -359,10 +327,7 @@ const Lancamentos = () => {
 
       {modalAberto && (
         <EditarModal
-          // Ao abrir o modal, passamos a dataHora no formato que ela vem da API (ISO 8601)
-          // Se o seu EditarModal espera DD/MM/AAAA, você precisaria formatar aqui.
-          // Por exemplo: dataHora: formatarDataParaExibicao(lancamentoSelecionado.dataHora)
-          lancamento={lancamentoSelecionado}
+          lancamento={lancamentoSelecionado} 
           onClose={() => setModalAberto(false)}
           onSave={salvarAlteracoes}
         />
@@ -372,14 +337,9 @@ const Lancamentos = () => {
         <NovoModal
           onClose={() => setNovoModalAberto(false)}
           onSalvarNovo={(idUsuario, novoGasto) => {
-            // NovoGasto.dataHora aqui pode vir em "DD/MM/AAAA" do modal de entrada
-            // Se sim, precisamos converter para ISO 8601 para a API.
-            let dataHoraParaApi = novoGasto.dataHora;
-            if (typeof novoGasto.dataHora === 'string' && novoGasto.dataHora.includes('/')) {
-                const [dia, mes, ano] = novoGasto.dataHora.split('/');
-                // Por padrão, se o modal não fornecer hora, minuto, segundo, usaremos 00:00:00 UTC
-                dataHoraParaApi = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia)).toISOString();
-            }
+            // novoGasto.dataHora já vem do NovoModal em "DD/MM/AAAA".
+            // Não precisamos converter para ISO 8601 aqui.
+            const dataHoraParaApi = novoGasto.dataHora; 
 
             authService.cadastrarGasto(idUsuario, { ...novoGasto, dataHora: dataHoraParaApi })
               .then(() => {
