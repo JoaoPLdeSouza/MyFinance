@@ -194,3 +194,153 @@
   color: #777;
   margin-top: 20px;
 }
+
+/* Container para agrupar os cards de ação */
+.planos-actions-group {
+  display: flex; /* Para alinhar os cards lado a lado */
+  flex-wrap: wrap; /* Permite que os cards quebrem a linha em telas menores */
+  gap: 20px; /* Espaçamento entre os cards */
+  margin-bottom: 30px;
+  justify-content: center; /* Centraliza os cards */
+}
+
+/* Estilo para cada card de ação (onde ficam a explicação e o botão) */
+.plan-action-card {
+  flex: 1; /* Permite que os cards cresçam para preencher o espaço */
+  min-width: 280px; /* Largura mínima para evitar que fiquem muito pequenos */
+  max-width: 45%; /* Largura máxima para dois cards por linha em telas maiores */
+  padding: 20px;
+  background-color: #f8f9fa; /* Um fundo suave para destacar */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column; /* Organiza conteúdo em coluna */
+  justify-content: space-between; /* Empurra o botão para baixo, se houver espaço */
+  align-items: center; /* Centraliza o texto e o botão */
+  text-align: center; /* Centraliza o texto */
+}
+
+.plan-action-card .action-description {
+  font-size: 0.95em;
+  color: #333;
+  margin-bottom: 20px; /* Espaço entre a descrição e o botão */
+  flex-grow: 1; /* Permite que a descrição ocupe o espaço disponível */
+}
+
+/* Estilo padrão para os botões do plano */
+.gerar-plano-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  min-width: 200px; /* Garante que os botões tenham uma largura mínima */
+  text-align: center;
+}
+
+.gerar-plano-button:hover {
+  background-color: #0056b3;
+}
+
+.gerar-plano-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Garante que o botão use o estilo padrão e seja centralizado no card */
+.plan-action-card .gerar-plano-button {
+  margin-top: auto; /* Empurra o botão para a parte inferior do card */
+  width: 100%; /* Opcional: faz o botão ocupar a largura total do card */
+  max-width: 250px; /* Limita a largura do botão para não ficar muito grande */
+}
+
+/* Estilo para o quadro verde de resumo/entendimento */
+.planos-summary {
+  background-color: #e6ffe6; /* Verde claro para o quadro */
+  border: 1px solid #d4edda; /* Borda sutil */
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  color: #155724; /* Texto verde escuro */
+}
+
+/* Estilo para o disclaimer dentro do quadro verde */
+.disclaimer-text {
+  font-size: 0.85em;
+  color: #388e3c; /* Um tone de verde mais escuro para o texto do disclaimer */
+  margin-top: 20px; /* Espaço do texto acima */
+  border-top: 1px dashed #a3e6a3; /* Linha tracejada para separar */
+  padding-top: 15px; /* Espaço entre a linha e o texto */
+  text-align: center; /* Centraliza o texto do disclaimer */
+}
+
+.bold-disclaimer {
+  font-weight: bold; /* Aplica negrito ao texto específico */
+}
+
+/* Estilo para o texto de explicação no popup */
+.popup-description {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 15px;
+  padding: 0 10px;
+  text-align: left; /* Alinha o texto do popup à esquerda */
+}
+
+/* Ajuste para os botões do popup se necessário */
+.popup form button {
+  margin-right: 10px; /* Espaçamento entre os botões do popup */
+}
+
+/* Estilos para a navegação "pills" */
+.plan-navigation-pills {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Espaçamento entre os botões e o texto central */
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.nav-pill-button {
+  background-color: #007bff; /* Azul padrão */
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 20px; /* Formato de "pill" */
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  white-space: nowrap; /* Evita que o texto quebre a linha */
+}
+
+.nav-pill-button:hover {
+  background-color: #0056b3;
+}
+
+.nav-pill-button.disabled-pill {
+  background-color: #e0e0e0; /* Cinza para desabilitado */
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.plan-index-display {
+  font-size: 1em;
+  font-weight: 500;
+  color: #34495e; /* Cor do texto do número da página */
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #f0f2f5; /* Um fundo suave para o texto do índice */
+}
+
+/* Media query para responsividade da navegação "pills" */
+@media (max-width: 600px) {
+  .plan-navigation-pills {
+    flex-direction: column; /* Empilha os botões em telas menores */
+    gap: 10px;
+  }
+}

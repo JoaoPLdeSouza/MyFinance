@@ -34,50 +34,67 @@ const Home = () => {
           setTotalGasto(totalGasto);
           setTotalInvestimento(totalInvest);
         })
-        .catch(err => console.error("Erro ao buscar lançamentos:", err));
+        .catch(err => {
+          console.error("Erro ao buscar lançamentos:", err);
+          // Em caso de erro ou ausência de lançamentos, garantir que os totais sejam 0
+          setGastos([]);
+          setTotalGasto(0);
+          setTotalInvestimento(0);
+        });
     }
   }, []);
 
   // Mapeamento de categorias para cores
   const categoryColors = {
     "investimento e poupanca": "#28a745", // Verde
-    "necessidades": "#007bff",          // Azul
-    "desejos": "#dc3545",              // Vermelho
+    "necessidades": "#007bff",            // Azul
+    "desejos": "#dc3545",                 // Vermelho
   };
 
+  // --- ALTERAÇÃO AQUI: Garantir que dadosGrafico sempre tenha um formato válido ---
+  const dadosGraficoBrutos = gastos.reduce((acc, item) => {
+    const nome = item.categoria
+      .replace("_E_", " e ")
+      .replace(/_/g, " ")
+      .toLowerCase();
+    const existente = acc.find(i => i[0] === nome);
+    if (existente) {
+      existente[1] += item.valor;
+    } else {
+      acc.push([nome, item.valor]);
+    }
+    return acc;
+  }, []);
+
+  // Se não houver dados, adicionar uma categoria padrão com valor 0 para evitar o erro
   const dadosGrafico = [
     ["Categoria", "Valor"],
-    ...gastos.reduce((acc, item) => {
-      const nome = item.categoria
-        .replace("_E_", " e ")
-        .replace(/_/g, " ")
-        .toLowerCase();
-      const existente = acc.find(i => i[0] === nome);
-      if (existente) {
-        existente[1] += item.valor;
-      } else {
-        acc.push([nome, item.valor]);
-      }
-      return acc;
-    }, [])
+    ...(dadosGraficoBrutos.length > 0 ? dadosGraficoBrutos : [["Nenhuma Categoria", 0]])
   ];
 
+  // --- ALTERAÇÃO AQUI: Garantir que agruparSubcategorias retorne um formato válido ---
   const agruparSubcategorias = (lista, categoria) => {
     const filtrado = lista.filter(g => g.categoria === categoria);
-    // Para gráficos de barra de despesas, usamos o valor absoluto para garantir que as barras sejam positivas e representem a magnitude do gasto
-    const total = filtrado.reduce((acc, g) => acc + Math.abs(g.valor), 0);
-
+    
     const agrupado = {};
     filtrado.forEach(g => {
-      agrupado[g.subcategoria] = (agrupado[g.subcategoria] || 0) + g.valor; // Mantém o valor original aqui
+      agrupado[g.subcategoria] = (agrupado[g.subcategoria] || 0) + g.valor;
     });
 
-    // Retorna os dados formatados com anotação de porcentagem usando Math.abs para o percentual de exibição
-    return Object.entries(agrupado).map(([nome, valor]) => [
-      nome,
-      valor, // O valor original será usado para o tamanho da barra
-      total > 0 ? `${((Math.abs(valor) / total) * 100).toFixed(1)}%` : '0%' // Calcula percentual com valor absoluto
-    ]);
+    const resultados = Object.entries(agrupado).map(([nome, valor]) => {
+        const total = filtrado.reduce((acc, g) => acc + Math.abs(g.valor), 0); // Calcula o total para o percentual
+        return [
+            nome,
+            valor,
+            total > 0 ? `${((Math.abs(valor) / total) * 100).toFixed(1)}%` : '0%'
+        ];
+    });
+
+    // Se não houver resultados, retornar um valor padrão para que o gráfico não quebre
+    if (resultados.length === 0) {
+        return [["Sem dados", 0, "0%"]];
+    }
+    return resultados;
   };
 
   return (
@@ -115,17 +132,22 @@ const Home = () => {
               chartType="PieChart"
               width="100%"
               height="calc(100% - 100px)"
-              data={dadosGrafico}
+              data={dadosGrafico} // Agora sempre terá um formato válido
               options={{
                 pieHole: 0.4,
-                colors: dadosGrafico.slice(1).map(item => categoryColors[item[0]]),
+                // Garantir que as cores sejam mapeadas corretamente mesmo com "Nenhuma Categoria"
+                colors: dadosGrafico.slice(1).map(item => categoryColors[item[0]] || '#CCCCCC'), // Cor padrão para "Nenhuma Categoria"
                 legend: { position: "bottom", textStyle: { color: '#555', fontName: 'Inter', fontSize: 13 } },
                 chartArea: { left: 15, top: 15, right: 15, bottom: 50 },
                 fontName: 'Inter, sans-serif',
                 titleTextStyle: {
                   fontSize: 0,
                 },
-                tooltip: { textStyle: { fontName: 'Inter', fontSize: 13 } }
+                tooltip: { textStyle: { fontName: 'Inter', fontSize: 13 } },
+                // Adicionado 'noData' para o gráfico de pizza caso haja apenas "Nenhuma Categoria"
+                slices: dadosGrafico.length === 2 && dadosGrafico[1][0] === "Nenhuma Categoria" ? {
+                    0: { color: '#CCCCCC' } // Cor cinza para "No data"
+                } : {}
               }}
             />
           </div>
@@ -140,7 +162,7 @@ const Home = () => {
               height="calc(100% - 100px)"
               data={[
                 ["Subcategoria", "Valor", { role: "annotation" }],
-                ...agruparSubcategorias(gastos, "NECESSIDADES")
+                ...agruparSubcategorias(gastos, "NECESSIDADES") // Agora sempre terá um formato válido
               ]}
               options={{
                 title: "",
@@ -182,7 +204,7 @@ const Home = () => {
               height="calc(100% - 100px)"
               data={[
                 ["Subcategoria", "Valor", { role: "annotation" }],
-                ...agruparSubcategorias(gastos, "DESEJOS")
+                ...agruparSubcategorias(gastos, "DESEJOS") // Agora sempre terá um formato válido
               ]}
               options={{
                 title: "",
@@ -224,7 +246,7 @@ const Home = () => {
               height="calc(100% - 100px)"
               data={[
                 ["Subcategoria", "Valor", { role: "annotation" }],
-                ...agruparSubcategorias(gastos, "INVESTIMENTO_E_POUPANCA")
+                ...agruparSubcategorias(gastos, "INVESTIMENTO_E_POUPANCA") // Agora sempre terá um formato válido
               ]}
               options={{
                 title: "",
