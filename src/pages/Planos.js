@@ -2,33 +2,35 @@ import React, { useEffect, useState, useCallback } from "react";
 import Layout from "../components/Layout";
 import { Chart } from "react-google-charts";
 import authService from "../services/authService";
-import "../assets/Planos.css"; // Certifique-se de que este CSS existe e está correto
-import VEcononoPopup from "../components/VEcononoPopup"; // Componente do popup
+import "../assets/Planos.css";
+import VEcononoPopup from "../components/VEcononoPopup";
 
 const Planos = () => {
-  const [dadosPlano, setDadosPlano] = useState(null); // Dados do plano atual exibido
-  const [loading, setLoading] = useState(true); // Estado de carregamento
-  const [error, setError] = useState(null); // Mensagens de erro
-  const [showValueInputPopup, setShowValueInputPopup] = useState(false); // Visibilidade do popup
-  const [todosOsPlanos, setTodosOsPlanos] = useState([]); // Lista de planos para navegação
-  const [currentPlanIndex, setCurrentPlanIndex] = useState(0); // Índice do plano atual na lista
+  const [dadosPlano, setDadosPlano] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showValueInputPopup, setShowValueInputPopup] = useState(false);
+  const [todosOsPlanos, setTodosOsPlanos] = useState([]);
+  const [currentPlanIndex, setCurrentPlanIndex] = useState(0);
 
-  // Cores padronizadas para os gráficos (pode ser o mesmo padrão da Home.js, por exemplo)
-  const chartColors = ['#007bff', '#28a745', '#dc3545'];
+  const categoriaCores = {
+    NECESSIDADES: '#007bff',        // Azul
+    DESEJOS: '#dc3545',             // Vermelho
+    INVESTIMENTO_E_POUPANCA: '#28a745', // Verde
+    ECONOMIA_PLANEJADA: '#8A2BE2'    // Roxo
+  };
 
-  // Função utilitária para formatar valores monetários
   const formatarValor = (valor) => {
     return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  // Mapeamento de categorias para exibição amigável
   const categoriaMapeada = {
     NECESSIDADES: "Necessidades",
     DESEJOS: "Desejos",
-    INVESTIMENTO_E_POUPANCA: "Investimento/Poupança"
+    INVESTIMENTO_E_POUPANCA: "Investimento/Poupança",
+    ECONOMIA_PLANEJADA: "Economia Planejada"
   };
 
-  // Prepara os dados para o gráfico de pizza ou barra
   const prepararDadosParaGrafico = (dataArray, titulo) => {
     const categoriasAgrupadas = dataArray.reduce((acc, item) => {
       acc[item.categoria] = (acc[item.categoria] || 0) + item.valor;
@@ -36,16 +38,36 @@ const Planos = () => {
     }, {});
 
     const dados = [["Categoria", titulo]];
-    for (const categoria in categoriasAgrupadas) {
-      dados.push([categoriaMapeada[categoria] || categoria, categoriasAgrupadas[categoria]]);
+    const coresOrdenadas = [];
+    const seriesOptions = {};
+
+    const orderedCategories = Object.keys(categoriaCores);
+    let seriesIndex = 0;
+
+    orderedCategories.forEach(categoriaKey => {
+      if (categoriasAgrupadas.hasOwnProperty(categoriaKey)) {
+        dados.push([categoriaMapeada[categoriaKey], categoriasAgrupadas[categoriaKey]]);
+        coresOrdenadas.push(categoriaCores[categoriaKey]);
+        seriesOptions[seriesIndex] = { color: categoriaCores[categoriaKey] };
+        seriesIndex++;
+      }
+    });
+
+    for (const categoriaKey in categoriasAgrupadas) {
+      if (!orderedCategories.includes(categoriaKey)) {
+        dados.push([categoriaMapeada[categoriaKey] || categoriaKey, categoriasAgrupadas[categoriaKey]]);
+        coresOrdenadas.push('#cccccc');
+        seriesOptions[seriesIndex] = { color: '#cccccc' };
+        seriesIndex++;
+      }
     }
-    return dados;
+    
+    return { data: dados, colors: coresOrdenadas, series: seriesOptions };
   };
 
-  // Carrega os planos financeiros do usuário
   const carregarPlanosDoUsuario = useCallback(async () => {
     setLoading(true);
-    setError(null); // Limpa qualquer erro anterior
+    setError(null);
     try {
       const usuario = JSON.parse(localStorage.getItem("usuario"));
       if (!usuario || !usuario.id) {
@@ -55,29 +77,27 @@ const Planos = () => {
       const response = await authService.buscarPlanosPorUsuario(usuario.id);
 
       if (Array.isArray(response.data) && response.data.length > 0) {
-        // Filtra e ordena os planos para pegar os mais recentes
         const planosDoUsuario = response.data
-          .filter((plano) => plano.idUsuario === usuario.id) // Garante que o plano é do usuário correto (se necessário)
-          .sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao)); // Ordena por data de criação decrescente
+          .filter((plano) => plano.idUsuario === usuario.id)
+          .sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
 
-        const ultimos3Planos = planosDoUsuario.slice(0, 3); // Pega os 3 planos mais recentes
+        const ultimos3Planos = planosDoUsuario.slice(0, 3);
         setTodosOsPlanos(ultimos3Planos);
 
         if (ultimos3Planos.length > 0) {
-          setDadosPlano(ultimos3Planos[0]); // Exibe o plano mais recente
+          setDadosPlano(ultimos3Planos[0]);
           setCurrentPlanIndex(0);
         } else {
-          setDadosPlano(null); // Nenhum plano encontrado
+          setDadosPlano(null);
           setCurrentPlanIndex(0);
         }
       } else {
-        setDadosPlano(null); // Resposta vazia ou não array
+        setDadosPlano(null);
         setTodosOsPlanos([]);
         setCurrentPlanIndex(0);
       }
     } catch (err) {
       console.error("Erro ao carregar os planos:", err);
-      // Extrai e define a mensagem de erro para o usuário
       if (err.response && err.response.data && err.response.data.message) {
         setError(`Erro ao carregar planos: ${err.response.data.message}`);
       } else if (err.message) {
@@ -90,9 +110,8 @@ const Planos = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // Dependência: carregarPlanosDoUsuario em si (para useCallback)
+  }, []);
 
-  // Gerar um plano padrão (sem valor específico para poupar)
   const gerarNovoPlano = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -102,16 +121,15 @@ const Planos = () => {
         throw new Error("ID do usuário não encontrado. Faça login novamente.");
       }
 
-      const response = await authService.gerarPlano(usuario.id); // Não passa valorPraPoupar
+      const response = await authService.gerarPlano(usuario.id);
 
       if (response.data && response.data.id) {
-        carregarPlanosDoUsuario(); // Recarrega os planos para mostrar o novo
+        carregarPlanosDoUsuario();
       } else {
         setError("O plano foi gerado, mas não pudemos exibi-lo. Tente recarregar a página.");
       }
     } catch (err) {
       console.error("Erro ao gerar novo plano padrão:", err);
-      // Trata o erro para exibir ao usuário
       let errorMessage = "Não foi possível gerar um novo plano financeiro. Tente novamente.";
       if (err.response) {
         if (err.response.data && err.response.data.message) {
@@ -131,52 +149,44 @@ const Planos = () => {
     }
   }, [carregarPlanosDoUsuario]);
 
-  // Gerar um plano com um valor específico para poupar
   const gerarNovoPlanoComValor = useCallback(async (valor) => {
     setLoading(true);
-    setError(null); // Limpar erros anteriores
-    setShowValueInputPopup(false); // Fechar popup, será reaberto se houver erro interno no popup
+    setError(null);
+    setShowValueInputPopup(false);
     try {
       const usuario = JSON.parse(localStorage.getItem("usuario"));
       if (!usuario || !usuario.id) {
         throw new Error("ID do usuário não encontrado. Faça login novamente.");
       }
 
-      // Chama o service, passando o valor para poupar.
-      // O service irá formatá-lo como query parameter para o backend Java.
       const response = await authService.gerarPlano(usuario.id, valor);
 
       if (response.data && response.data.id) {
-        carregarPlanosDoUsuario(); // Recarrega os planos para mostrar o novo
+        carregarPlanosDoUsuario();
       } else {
         setError("O plano foi gerado, mas não pudemos exibi-lo. Tente recarregar a página.");
       }
     } catch (err) {
       console.error("Erro ao gerar novo plano com valor:", err);
-      // **ESSENCIAL**: Capturar a mensagem de erro específica do backend
       let errorMessage = "Ocorreu um erro ao gerar o plano com valor. Tente novamente.";
       if (err.response) {
-        // Erro vindo do servidor (Spring Boot)
         if (err.response.data && err.response.data.message) {
-          errorMessage = err.response.data.message; // Mensagem da RuntimeException do Java
+          errorMessage = err.response.data.message;
         } else if (err.response.data) {
-          // Caso o backend retorne um objeto de erro diferente do esperado
           errorMessage = JSON.stringify(err.response.data);
         } else {
           errorMessage = `Erro do servidor: ${err.response.status} ${err.response.statusText}`;
         }
       } else if (err.message) {
-        // Erro do JavaScript ou do axios antes da resposta do servidor
         errorMessage = err.message;
       }
       setError(errorMessage);
-      setDadosPlano(null); // Limpa o plano se houver erro na geração
+      setDadosPlano(null);
     } finally {
       setLoading(false);
     }
-  }, [carregarPlanosDoUsuario]); // Dependência: carregarPlanosDoUsuario
+  }, [carregarPlanosDoUsuario]);
 
-  // Navegação entre planos anteriores/próximos
   const handlePreviousPlan = () => {
     const newIndex = currentPlanIndex + 1;
     if (newIndex < todosOsPlanos.length) {
@@ -193,12 +203,11 @@ const Planos = () => {
     }
   };
 
-  // Efeito para carregar os planos na montagem do componente
   useEffect(() => {
     carregarPlanosDoUsuario();
   }, [carregarPlanosDoUsuario]);
 
-  const hasMultiplePlans = todosOsPlanos.length > 1; // Verifica se há mais de um plano para navegação
+  const hasMultiplePlans = todosOsPlanos.length > 1;
 
   return (
     <Layout>
@@ -240,7 +249,6 @@ const Planos = () => {
           </div>
         </div>
 
-        {/* Mensagens de estado: carregando, erro, sem dados */}
         {loading && (
           <div className="planos-message loading-message">
             <p>Carregando plano financeiro...</p>
@@ -276,7 +284,6 @@ const Planos = () => {
               </p>
             </div>
 
-            {/* Seção de Ajustes Recomendados */}
             {dadosPlano.ajustes && dadosPlano.ajustes.length > 0 && (
               <div className="planos-section">
                 <h2>Ajustes Recomendados</h2>
@@ -290,15 +297,16 @@ const Planos = () => {
                       chartType="PieChart"
                       width="100%"
                       height="100%"
-                      data={prepararDadosParaGrafico(dadosPlano.ajustes, "Valor Ajustado")}
+                      data={prepararDadosParaGrafico(dadosPlano.ajustes, "Valor Ajustado").data}
                       options={{
                         title: "Distribuição dos Ajustes Recomendados",
                         pieHole: 0.4,
                         is3D: false,
                         legend: { position: "bottom", alignment: "center" },
-                        colors: chartColors,
                         tooltip: { trigger: 'focus' },
-                        backgroundColor: 'transparent'
+                        backgroundColor: 'transparent',
+                        chartArea: { left: "5%", top: "10%", width: "90%", height: "70%" },
+                        colors: prepararDadosParaGrafico(dadosPlano.ajustes, "Valor Ajustado").colors
                       }}
                     />
                   </div>
@@ -316,7 +324,6 @@ const Planos = () => {
               </div>
             )}
 
-            {/* Seção de Áreas de Risco */}
             {dadosPlano.riscos && dadosPlano.riscos.length > 0 && (
               <div className="planos-section">
                 <h2>Áreas de Risco</h2>
@@ -330,15 +337,17 @@ const Planos = () => {
                       chartType="BarChart"
                       width="100%"
                       height="100%"
-                      data={prepararDadosParaGrafico(dadosPlano.riscos, "Valor Detectado")}
+                      data={prepararDadosParaGrafico(dadosPlano.riscos, "Valor Detectado").data}
                       options={{
                         title: "Valores por Categoria de Risco",
                         legend: { position: "none" },
                         bars: "horizontal",
                         hAxis: { format: "currency" },
-                        colors: ['#dc3545'], // Mantendo vermelho para riscos
                         tooltip: { trigger: 'focus' },
-                        backgroundColor: 'transparent'
+                        backgroundColor: 'transparent',
+                        chartArea: { left: "15%", top: "10%", width: "70%", height: "70%" },
+                        // ******* MUDANÇA AQUI: FORÇANDO A COR PARA VERMELHO *******
+                        colors: ['#dc3545'] // Usa apenas o vermelho
                       }}
                     />
                   </div>
@@ -356,7 +365,6 @@ const Planos = () => {
               </div>
             )}
 
-            {/* Mensagem se não há ajustes nem riscos */}
             {!dadosPlano?.ajustes?.length && !dadosPlano?.riscos?.length && (
               <div className="planos-message no-data-found-message">
                 <p>O plano foi gerado, mas não foram encontrados ajustes ou riscos para o seu perfil financeiro atual. Parece que suas finanças estão em ordem!</p>
@@ -369,7 +377,6 @@ const Planos = () => {
               </p>
             )}
 
-            {/* Navegação entre planos */}
             {hasMultiplePlans && (
               <div className="plan-navigation-pills">
                 <button
@@ -394,7 +401,6 @@ const Planos = () => {
           </>
         )}
 
-        {/* Mensagem inicial quando não há planos e não há erros */}
         {!loading && !error && !dadosPlano && (
           <div className="planos-message initial-message">
             <p>
@@ -405,11 +411,10 @@ const Planos = () => {
           </div>
         )}
 
-        {/* Componente do popup para entrada de valor */}
         <VEcononoPopup
           isOpen={showValueInputPopup}
           onClose={() => setShowValueInputPopup(false)}
-          onSubmit={gerarNovoPlanoComValor} // Passa a função que lida com o valor para o popup
+          onSubmit={gerarNovoPlanoComValor}
           isLoading={loading}
         />
       </div>

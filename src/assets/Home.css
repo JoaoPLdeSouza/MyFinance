@@ -1,179 +1,243 @@
 /* src/assets/Home.css */
 
-/* Importa uma fonte moderna do Google Fonts (exemplo: Inter) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* Reset básico e box-sizing para um layout mais previsível */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', sans-serif; /* Aplica a nova fonte */
-  margin: 0;
-  padding: 0;
-  /* Removido: background-color: #f0f2f5; para que o fundo do Layout/body seja visível */
-}
-
-/* O Layout.css provavelmente tem padding para o conteúdo principal,
-   então o home-container pode não precisar de padding-top extra. */
+/* Estilos gerais do container da página Home */
 .home-container {
-  padding: 40px; /* Adiciona padding geral para o conteúdo */
-  background-color: transparent; /* Torna o fundo do container transparente */
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 25px; /* Espaçamento interno em todas as direções */
+  min-height: calc(100vh - 60px); /* Altura mínima para ocupar a tela, ajustando para um possível cabeçalho */
+  font-family: 'Inter', sans-serif; /* Fonte padrão para toda a página */
+  color: #333; /* Cor de texto padrão */
+  box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura/altura */
 }
 
+/* Estilo do cabeçalho principal da Home */
 .home-header {
-  font-size: 36px; /* Aumenta o tamanho do título principal */
-  font-weight: 700; /* Mais negrito */
-  color: #34495e; /* Uma cor mais escura para o título */
-  margin-bottom: 50px; /* Mais espaço abaixo do título */
+  font-size: 2.2rem;
+  color: #212529;
+  margin-bottom: 30px;
   text-align: center;
-  letter-spacing: -0.5px; /* Pequeno ajuste no espaçamento de letras */
+  font-weight: 700;
 }
 
+/* Estilos para os cartões de estatísticas (Rendimento, Gastos, Investimento) */
 .top-cards {
-  display: flex;
+  display: flex; /* Habilita flexbox para organizar os cartões */
+  justify-content: space-around; /* Distribui o espaço igualmente entre os cartões */
   flex-wrap: wrap; /* Permite que os cartões quebrem a linha em telas menores */
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 60px;
+  gap: 20px; /* Espaçamento entre os cartões */
+  margin-bottom: 40px;
+  padding: 0 25px; /* Adiciona padding lateral para alinhar com o conteúdo principal */
+  box-sizing: border-box; /* Inclui padding na largura total */
 }
 
 .stat-card {
-  background: #ffffff;  /* Mantém o fundo branco para os cartões de estatísticas */
-  padding: 30px;
-  border-radius: 12px; /* Bordas mais arredondadas */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Sombra mais suave e proeminente */
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra suave */
+  padding: 25px 30px;
   text-align: center;
-  width: 300px; /* Ligeiramente mais largo */
-  min-height: 130px; /* Ligeiramente mais alto */
+  flex: 1; /* Permite que o cartão cresça e encolha para preencher o espaço */
+  min-width: 280px; /* Largura mínima para o cartão não ficar muito apertado */
+  max-width: 350px; /* Largura máxima para não ficar muito largo em telas grandes */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição suave ao interagir */
-}
-
-.stat-card:hover {
-  transform: translateY(-5px); /* Efeito de "levantar" ao passar o mouse */
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
 
 .card-label {
-  font-size: 18px; /* Tamanho da fonte para o rótulo */
-  font-weight: 500; /* Peso médio para o rótulo */
-  color: #6c757d; /* Cor mais suave para o rótulo */
-  margin-bottom: 8px; /* Espaço entre o rótulo e o valor */
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .card-value {
-  font-size: 28px; /* Tamanho da fonte para o valor */
-  font-weight: 700; /* Bem negrito para o valor */
-  color: #2c3e50; /* Cor escura para o valor */
-  letter-spacing: -0.5px;
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #007bff; /* Azul vibrante para os valores */
 }
 
+/* Estilos para a grade de gráficos */
 .dashboard-grid {
   display: grid;
-  /* Ajuste para que os gráficos se expandam mais */
-  grid-template-columns: repeat(auto-fit, minmax(calc(50% - 30px), 1fr)); /* 2 colunas, ocupando quase 50% cada com gap */
-  gap: 30px; /* Espaço entre os gráficos */
-  padding: 0 20px; /* Padding lateral */
-  flex-grow: 1;
+  grid-template-columns: 1fr; /* Ocupa uma única coluna de largura total */
+  gap: 20px; /* Espaçamento entre os cards de gráficos */
+  padding: 0 25px; /* Adiciona padding lateral para alinhar com outros elementos */
+  box-sizing: border-box; /* Inclui padding na largura total */
 }
 
 .chart-card {
-  background: #ffffff; /* Mantém o fundo branco para os cartões dos gráficos */
-  padding: 25px; /* Aumenta o padding interno para o conteúdo */
-  border-radius: 12px; /* Bordas arredondadas */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Sombra suave */
-  height: 500px; /* Aumenta a altura dos gráficos para melhor visualização e espaço para texto */
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0; /* Removido padding direto para controlar internamente */
   display: flex;
-  flex-direction: column; /* Organiza título, descrição e gráfico verticalmente */
-  align-items: flex-start; /* Alinha o conteúdo à esquerda */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-direction: column;
+  min-height: 400px; /* Aumentado ainda mais para dar mais espaço aos gráficos */
+  height: auto; /* Permite que a altura se ajuste ao conteúdo, mas garante um mínimo */
+  position: relative;
+  box-sizing: border-box;
 }
 
-.chart-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+/* Estilos para os botões de navegação dos gráficos (abas) - AGORA DENTRO DO .chart-card */
+.chart-navigation-buttons {
+  display: flex;
+  justify-content: flex-start; /* Alinha os botões ao início (esquerda) */
+  align-items: flex-end; /* Alinha os itens na parte inferior, crucial para o visual de abas */
+  margin-bottom: 20px; /* Espaço entre os botões e o título/descrição do gráfico */
+  border-bottom: 1px solid #e0e0e0; /* Linha sutil abaixo de todos os botões */
+  padding: 0 25px; /* Padding lateral para alinhar os botões com o conteúdo interno do card */
+  flex-wrap: nowrap; /* Impede que os botões quebrem a linha */
+  width: 100%; /* Garante que o contêiner dos botões ocupe toda a largura disponível */
+  box-sizing: border-box;
+  overflow-x: auto; /* Adiciona scroll horizontal se os botões excederem a largura */
+  -webkit-overflow-scrolling: touch;
+  padding-top: 20px; /* Espaço acima dos botões dentro do card */
 }
 
-.chart-title {
-  font-size: 22px; /* Título do gráfico */
+.nav-button {
+  background-color: transparent;
+  color: #888;
+  border: none;
+  padding: 10px 25px; /* Padding interno para o texto do botão */
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0; /* Impede que os botões encolham */
+  margin-right: -1px; /* Para colar os botões */
+  position: relative;
+  z-index: 0;
+}
+
+.nav-button:hover {
+  color: #555;
+}
+
+.nav-button.active {
+  color: #333;
   font-weight: 600;
-  color: #34495e;
-  margin-bottom: 10px; /* Espaço entre título e descrição */
-  text-align: left; /* Garante alinhamento à esquerda */
-  width: 100%; /* Ocupa a largura total do card */
+  border-color: #007bff;
+  z-index: 1;
+  margin-bottom: -1px; /* Faz a borda ativa se sobrepor à linha de base do container */
 }
 
-.chart-description {
-  font-size: 15px; /* Descrição do gráfico */
+/* Estilos para o conteúdo do gráfico dentro do card */
+.chart-card .chart-title {
+  padding: 0 25px; /* Adiciona padding lateral para o título dentro do card */
+  font-size: 1.5rem;
+  color: #212529;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.chart-card .chart-description {
+  padding: 0 25px; /* Adiciona padding lateral para a descrição dentro do card */
+  font-size: 0.95rem;
   color: #6c757d;
-  margin-bottom: 20px; /* Espaço entre descrição e o gráfico */
-  text-align: left; /* Garante alinhamento à esquerda */
-  width: 100%; /* Ocupa a largura total do card */
-  line-height: 1.5; /* Espaçamento entre linhas */
+  margin-bottom: 20px;
+  line-height: 1.4;
 }
 
-/* Garante que o Google Chart use a largura e altura restantes do card */
-.chart-card > div:last-child { /* Seleciona o div que contém o gráfico do Google Charts */
-  flex-grow: 1; /* Permite que o gráfico preencha o espaço restante */
-  width: 100%; /* Garante que o gráfico ocupe toda a largura disponível */
+/* Garante que o container do gráfico tenha espaço para o gráfico */
+.chart-container-wrapper {
+  flex-grow: 1; /* Permite que este wrapper ocupe o espaço restante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 25px 25px; /* Padding ao redor do gráfico, especialmente na parte inferior */
+  min-height: 300px; /* Adicionado para garantir um espaço mínimo para o gráfico, evitando esticamento */
 }
 
-/* Ajustes para a responsividade em telas menores */
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr; /* Uma coluna em telas menores */
-    padding: 0 15px;
+/* Ajustes para o elemento do gráfico (Google Charts) */
+/* Estas classes são geradas pelo Google Charts, forçando a largura e altura */
+.chart-card .google-visualization-table-table,
+.chart-card .google-visualization-orgchart-table,
+.chart-card .google-visualization-chart-wrapper div { /* Adicionado div para pegar o container principal do chart */
+  width: 100% !important;
+  height: 100% !important; /* Garante que o gráfico ocupe o espaço disponível */
+}
+
+/* Estilo para o chart-card quando ele deve ocupar toda a largura */
+.chart-card.full-width {
+  grid-column: 1 / -1; /* Faz o item ocupar todas as colunas disponíveis no grid */
+  height: auto; /* Permite que a altura se ajuste dinamicamente */
+}
+
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+  .home-header {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
   }
 
   .top-cards {
-    flex-direction: column; /* Cartões empilhados em telas menores */
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
+    padding: 0 15px;
   }
 
   .stat-card {
-    width: 90%; /* Ocupa mais largura em telas menores */
-    max-width: 350px; /* Limita a largura máxima */
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .chart-navigation-buttons {
+    padding: 0 15px; /* Menor padding em telas menores */
+    padding-top: 15px; /* Ajuste o padding-top para telas menores */
+  }
+
+  .nav-button {
+    padding: 8px 15px;
+    font-size: 1rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    padding: 0 15px;
   }
 
   .chart-card {
-    height: 480px; /* Ajusta a altura dos cards em telas menores */
-  }
-}
-
-@media (max-width: 768px) {
-  .home-header {
-    font-size: 30px;
-    margin-bottom: 40px;
+    min-height: 500px; /* Altura mínima ajustada para telas menores */
   }
 
-  .home-container {
-    padding: 20px;
+  .chart-card.full-width {
+    height: auto; /* Ajusta a altura automaticamente */
   }
 
-  .chart-card {
-    padding: 20px; /* Reduz um pouco o padding interno em telas muito pequenas */
+  .chart-card .chart-title,
+  .chart-card .chart-description {
+    padding: 0 15px; /* Ajuste o padding para telas menores */
   }
 
-  .chart-title {
-    font-size: 20px;
-  }
-
-  .chart-description {
-    font-size: 14px;
+  .chart-container-wrapper {
+    padding: 0 15px 15px; /* Ajuste o padding para telas menores */
+    min-height: 250px; /* Min-height para gráficos em telas menores */
   }
 }
 
 @media (max-width: 480px) {
   .home-container {
     padding: 15px;
+  }
+
+  .home-header {
+    font-size: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .card-value {
+    font-size: 1.8rem;
+  }
+
+  .nav-button {
+    font-size: 0.9rem;
+    padding: 7px 12px;
   }
 }
