@@ -51,3 +51,10 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+.error-message {
+  color: red;
+  font-size: 0.85em;
+  margin-top: -8px; /* Ajuste para posicionar abaixo do input */
+  margin-bottom: 10px; /* Espaçamento após a mensagem de erro */
+}

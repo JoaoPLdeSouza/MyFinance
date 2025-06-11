@@ -1,4 +1,3 @@
-// src/components/EditarModal.js
 import React, { useEffect, useState } from "react";
 import "../assets/EditarModal.css";
 
@@ -52,6 +51,7 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
   const [categoria, setCategoria] = useState(lancamento.categoria);
   const [subcategoria, setSubcategoria] = useState(lancamento.subcategoria);
   const [dataParaBackend, setDataParaBackend] = useState(""); // Novo estado para armazenar a data no formato DD/MM/AAAA para o backend
+  const [erroValor, setErroValor] = useState(""); // Novo estado para a mensagem de erro do valor
 
   useEffect(() => {
     setValor(formatarValor(lancamento.valor));
@@ -74,14 +74,21 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
     const decimal = raw.slice(-2);
     const formatado = `${parseInt(inteiro, 10)},${decimal}`;
     setValor(formatado);
+    setErroValor(""); // Limpa o erro ao digitar
   };
 
   const handleSalvar = () => {
+    const valorNumerico = parseFloat(valor.replace(",", "."));
+    if (valorNumerico <= 0) { // Verifica se o valor é 0 ou menor
+      setErroValor("O valor não pode ser 0,00. Por favor, insira um valor válido.");
+      return; // Impede que a função continue
+    }
+
     if (valor && categoria && subcategoria) {
       const gastoEditado = {
         id: lancamento.id,
         dataHora: dataParaBackend, // Envia a data que já está no formato DD/MM/AAAA
-        valor: parseFloat(valor.replace(",", ".")),
+        valor: valorNumerico,
         categoria,
         subcategoria
       };
@@ -116,6 +123,7 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
           }}
           onPaste={(e) => e.preventDefault()}
         />
+        {erroValor && <p className="error-message">{erroValor}</p>} {/* Exibe a mensagem de erro */}
 
         <label>Categoria:</label>
         <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
