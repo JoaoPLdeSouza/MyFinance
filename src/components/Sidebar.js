@@ -9,19 +9,19 @@ const Sidebar = ({ isOpen }) => {
     // A div terá a classe 'sidebar' e também 'open' ou 'closed' dependendo do estado isOpen
     <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
       <ul>
-        {/* Link para a página Home (Relatórios) com ícone e texto */}
-        <li>
-          <Link to="/home">
-            <FaChartBar className="sidebar-icon" />
-            <span className="link-text">Relatórios</span>
-          </Link>
-        </li>
-
         {/* Link para a página Lançamentos com ícone e texto */}
         <li>
           <Link to="/lancamentos">
             <FaExchangeAlt className="sidebar-icon" />
             <span className="link-text">Lançamentos</span>
+          </Link>
+        </li>
+
+        {/* Link para a página Home (Relatórios) com ícone e texto */}
+        <li>
+          <Link to="/home">
+            <FaChartBar className="sidebar-icon" />
+            <span className="link-text">Relatórios</span>
           </Link>
         </li>
 

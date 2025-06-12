@@ -39,7 +39,7 @@ const VEcononoPopup = ({ isOpen, onClose, onSubmit, isLoading }) => {
 
     // Validação básica no front-end: verifica se é um número válido e positivo
     if (isNaN(numericValue) || numericValue <= 0) {
-      setErroValor('Por favor, insira um valor numérico válido e positivo (maior que 0,00).');
+      setErroValor('Por favor, insira um valor numérico válido (maior que 0,00).');
       return; // Interrompe a submissão se a validação falhar
     }
 
