@@ -14,8 +14,8 @@ const Planos = () => {
   const [currentPlanIndex, setCurrentPlanIndex] = useState(0);
 
   const categoriaCores = {
-    NECESSIDADES: '#007bff',        // Azul
-    DESEJOS: '#dc3545',             // Vermelho
+    NECESSIDADES: '#007bff',          // Azul
+    DESEJOS: '#dc3545',           // Vermelho
     INVESTIMENTO_E_POUPANCA: '#28a745', // Verde
     ECONOMIA_PLANEJADA: '#8A2BE2'    // Roxo
   };
@@ -77,15 +77,16 @@ const Planos = () => {
       const response = await authService.buscarPlanosPorUsuario(usuario.id);
 
       if (Array.isArray(response.data) && response.data.length > 0) {
+        // Filtra e ordena os planos para pegar os mais recentes por ID
         const planosDoUsuario = response.data
           .filter((plano) => plano.idUsuario === usuario.id)
-          .sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
+          .sort((a, b) => b.id - a.id); // <--- MUDANÇA AQUI: Ordena por ID de forma decrescente
 
-        const ultimos3Planos = planosDoUsuario.slice(0, 3);
+        const ultimos3Planos = planosDoUsuario.slice(0, 3); // Pega os 3 planos com os IDs mais altos
         setTodosOsPlanos(ultimos3Planos);
 
         if (ultimos3Planos.length > 0) {
-          setDadosPlano(ultimos3Planos[0]);
+          setDadosPlano(ultimos3Planos[0]); // Exibe o plano com o maior ID na página 1
           setCurrentPlanIndex(0);
         } else {
           setDadosPlano(null);
@@ -346,8 +347,7 @@ const Planos = () => {
                         tooltip: { trigger: 'focus' },
                         backgroundColor: 'transparent',
                         chartArea: { left: "15%", top: "10%", width: "70%", height: "70%" },
-                        // ******* MUDANÇA AQUI: FORÇANDO A COR PARA VERMELHO *******
-                        colors: ['#dc3545'] // Usa apenas o vermelho
+                        colors: ['#dc3545'] // Mantém a cor vermelha para todos os riscos
                       }}
                     />
                   </div>
@@ -379,22 +379,24 @@ const Planos = () => {
 
             {hasMultiplePlans && (
               <div className="plan-navigation-pills">
+                {/* Botão "Plano Mais Recente" (antigo "Próximo Plano") */}
                 <button
-                  onClick={handlePreviousPlan}
-                  disabled={currentPlanIndex === todosOsPlanos.length - 1 || loading}
-                  className={`nav-pill-button ${currentPlanIndex === todosOsPlanos.length - 1 ? 'disabled-pill' : ''}`}
-                >
-                  Plano Anterior
-                </button>
-                <span className="plan-index-display">
-                  Plano {todosOsPlanos.length - currentPlanIndex} de {todosOsPlanos.length}
-                </span>
-                <button
-                  onClick={handleNextPlan}
+                  onClick={handleNextPlan} // A função handleNextPlan avança para o plano com ID menor (mais recente)
                   disabled={currentPlanIndex === 0 || loading}
                   className={`nav-pill-button ${currentPlanIndex === 0 ? 'disabled-pill' : ''}`}
                 >
-                  Próximo Plano
+                  Anterior
+                </button>
+                <span className="plan-index-display">
+                  Plano {currentPlanIndex + 1} de {todosOsPlanos.length}
+                </span>
+                {/* Botão "Plano Mais Antigo" (antigo "Plano Anterior") */}
+                <button
+                  onClick={handlePreviousPlan} // A função handlePreviousPlan avança para o plano com ID maior (mais antigo)
+                  disabled={currentPlanIndex === todosOsPlanos.length - 1 || loading}
+                  className={`nav-pill-button ${currentPlanIndex === todosOsPlanos.length - 1 ? 'disabled-pill' : ''}`}
+                >
+                  Proximo
                 </button>
               </div>
             )}
