@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/Registro.css";
 import authService from "../services/authService";
+import PUPRegistro from "../components/PUPRegistro"; // Changed from Popup to PUPRegistro
 
 const Registro = () => {
   const [nome, setNome] = useState("");
@@ -10,24 +11,38 @@ const Registro = () => {
   const [senha, setSenha] = useState("");
   const [confirmSenha, setConfirmSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro(""); // Limpa o erro anterior
+    setErro("");
+    setPopupMessage("");
 
     if (senha !== confirmSenha) {
       setErro("As senhas não coincidem!");
+      setPopupMessage("As senhas não coincidem!");
+      setPopupType("error");
       return;
     }
 
     try {
       await authService.register({ nome, email, senha });
-      alert("Usuário registrado com sucesso!");
-      navigate("/login");
+      setPopupMessage("Usuário registrado com sucesso!");
+      setPopupType("success");
     } catch (err) {
       console.error("Erro ao registrar:", err);
       setErro("Erro ao registrar. Verifique os dados ou tente novamente.");
+      setPopupMessage("Erro ao registrar. Verifique os dados ou tente novamente.");
+      setPopupType("error");
+    }
+  };
+
+  const handleClosePopup = () => {
+    setPopupMessage("");
+    if (popupType === "success") {
+      navigate("/login");
     }
   };
 
@@ -88,6 +103,9 @@ const Registro = () => {
       <p>
         Já tem uma conta? <Link to="/login">Faça login aqui</Link>
       </p>
+
+      {/* Carrega o componente do PUPRegistro */}
+      <PUPRegistro message={popupMessage} type={popupType} onClose={handleClosePopup} /> {/* Changed from Popup to PUPRegistro */}
     </div>
   );
 };

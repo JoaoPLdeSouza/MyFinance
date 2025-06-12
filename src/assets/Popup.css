@@ -9,7 +9,7 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
   display: flex;
   justify-content: center; /* Center horizontally */
-  align-items: center;    /* Center vertically */
+  align-items: center;      /* Center vertically */
   z-index: 1000; /* Ensure it's on top of other content */
 }
 
@@ -103,10 +103,10 @@
 .popup-message {
   margin-top: 10px; /* Reduzido o margin-top para 10px */
   margin-bottom: 10px; /* Adicionado margin-bottom */
-  font-size: 14px;
+  font-size: 18px; /* <-- INCREASED FONT SIZE HERE */
   color: green; /* Cor padrão para mensagens de sucesso */
-  text-align: left; /* Alinha mensagens à esquerda */
-  padding-left: 5px; /* Pequeno espaçamento à esquerda */
+  text-align: center; /* Alinha mensagens ao centro */
+  padding-left: 0; /* Remove small left padding */
 }
 
 .popup-message.error-message { /* Estilo para mensagens de erro */
