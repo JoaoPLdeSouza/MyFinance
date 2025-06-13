@@ -1,5 +1,3 @@
-// src/pages/Lancamentos.js
-
 import React, { useEffect, useState, useCallback } from "react";
 import Layout from "../components/Layout";
 import authService from "../services/authService";
@@ -20,43 +18,62 @@ const categoriaReversaMapeada = Object.keys(categoriaMapeada).reduce((acc, key) 
   return acc;
 }, {});
 
-// A função parseDateString não será mais usada para ordenação, mas pode ser útil para o filtro de datas
-// se as datas no dropdown continuarem sendo no formato "DD/MM/AAAA".
-const parseDateString = (dateString) => {
-  if (!dateString) return null;
+// Função auxiliar para formatar a data do input date (YYYY-MM-DD) para DD/MM/YYYY
+const formatarDataParaAPI = (isoDateString) => {
+  if (!isoDateString) return "";
+  const [year, month, day] = isoDateString.split('-');
+  return `${day}/${month}/${year}`;
+};
 
-  if (dateString.includes('-') && dateString.includes('T')) {
-    return new Date(dateString); // Provavelmente ISO 8601
+// Nova função para converter DD/MM/YYYY para um objeto Date
+const parseDateDDMMYYYY = (dateString) => {
+  if (!dateString) return null;
+  const parts = dateString.split('/');
+  // Note: Month is 0-indexed in JavaScript Date
+  // New Date(year, monthIndex, day, hours, minutes, seconds, milliseconds)
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // Mês é base 0
+  const year = parseInt(parts[2], 10);
+
+  // Tentativa de extrair tempo se houver (para dataHora)
+  const timeMatch = dateString.match(/(\d{2}):(\d{2}):(\d{2})/);
+  if (timeMatch) {
+    const hours = parseInt(timeMatch[1], 10);
+    const minutes = parseInt(timeMatch[2], 10);
+    const seconds = parseInt(timeMatch[3], 10);
+    return new Date(year, month, day, hours, minutes, seconds);
   }
 
-  const parts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}):(\d{2}))?/);
-  if (!parts) return null;
-
-  const day = parseInt(parts[1], 10);
-  const month = parseInt(parts[2], 10) - 1; // Mês é base 0
-  const year = parseInt(parts[3], 10);
-  const hour = parseInt(parts[4] || '0', 10);
-  const minute = parseInt(parts[5] || '0', 10);
-  const second = parseInt(parts[6] || '0', 10);
-
-  return new Date(year, month, day, hour, minute, second);
+  return new Date(year, month, day);
 };
 
 // Função auxiliar para formatar a data para exibição (sempre DD/MM/AAAA)
-const formatarDataParaExibicao = (isoString) => {
-  try {
-    const date = new Date(isoString);
-    if (isNaN(date.getTime())) {
-      const parsedDate = parseDateString(isoString);
-      if (parsedDate && !isNaN(parsedDate.getTime())) {
-        return parsedDate.toLocaleDateString('pt-BR');
-      }
-      return "Data Inválida";
+const formatarDataParaExibicao = (dateInput) => {
+  if (!dateInput) return "Data Inválida";
+
+  let date;
+
+  // Primeiro, tenta tratar como formato ISO (YYYY-MM-DDTHH:mm:ss.sssZ) ou similar
+  if (typeof dateInput === 'string' && dateInput.includes('-') && dateInput.includes('T')) {
+    date = new Date(dateInput);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString('pt-BR');
     }
-    return date.toLocaleDateString('pt-BR');
-  } catch (e) {
-    return "Data Inválida";
   }
+
+  // Se não for um formato ISO válido ou se já for DD/MM/YYYY
+  // Tenta parsear como DD/MM/YYYY (que é o formato que a API parece estar retornando)
+  date = parseDateDDMMYYYY(dateInput);
+  if (date && !isNaN(date.getTime())) {
+    // Retorna a data formatada para DD/MM/AAAA
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // Fallback para caso não consiga parsear
+  return "Data Inválida";
 };
 
 
@@ -72,52 +89,70 @@ const Lancamentos = () => {
 
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroSubcategoria, setFiltroSubcategoria] = useState("");
-  const [filtroData, setFiltroData] = useState("");
+  const [filtroDataInicio, setFiltroDataInicio] = useState(""); // Formato YYYY-MM-DD para input type="date"
+  const [filtroDataFinal, setFiltroDataFinal] = useState("");   // Formato YYYY-MM-DD para input type="date"
 
   const [opcoesCategorias, setOpcoesCategorias] = useState([]);
   const [opcoesSubcategorias, setOpcoesSubcategorias] = useState([]);
-  const [opcoesDatas, setOpcoesDatas] = useState([]);
-
-  const [todosLancamentosOriginais, setTodosLancamentosOriginais] = useState([]);
+  
+  const [todosLancamentosOriginais, setTodosLancamentosOriginais] = useState([]); // Usado para filtros locais
 
   const itensPorPagina = 15;
 
-  const buscarLancamentos = useCallback(() => {
+  const buscarLancamentos = useCallback(async (dataInicio = "", dataFinal = "") => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     if (usuario?.id) {
-      authService.buscarLancamentosPorUsuario(usuario.id)
-        .then(res => {
-          const lancamentosOrdenados = res.data.sort((a, b) => {
+      const filtros = {};
+      // APENAS adiciona a data se ela NÃO for vazia
+      if (dataInicio) {
+        filtros.dataInicio = dataInicio;
+      }
+      if (dataFinal) {
+        filtros.dataFinal = dataFinal;
+      }
+      
+      try {
+        const res = await authService.buscarLancamentosPorUsuario(usuario.id, filtros);
+        
+        const lancamentosOrdenados = res.data.sort((a, b) => {
+          const dateA = parseDateDDMMYYYY(a.dataHora); // A API está retornando DD/MM/YYYY
+          const dateB = parseDateDDMMYYYY(b.dataHora); // A API está retornando DD/MM/YYYY
+
+          if (dateA && dateB && dateA.getTime() === dateB.getTime()) {
             return b.id - a.id;
-          });
+          }
+          return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
+        });
 
-          setLancamentos(lancamentosOrdenados);
-          setTodosLancamentosOriginais(lancamentosOrdenados);
+        setLancamentos(lancamentosOrdenados);
+        setTodosLancamentosOriginais(lancamentosOrdenados);
 
-          const categoriasIniciais = [...new Set(lancamentosOrdenados.map(item => categoriaMapeada[item.categoria] || item.categoria).filter(Boolean))].sort();
-          const subcategoriasIniciais = [...new Set(lancamentosOrdenados.map(item => item.subcategoria).filter(Boolean))].sort();
-          
-          const datasUnicasExibicao = [...new Set(lancamentosOrdenados.map(item => formatarDataParaExibicao(item.dataHora)).filter(Boolean))].sort((a, b) => {
-              const partsA = a.split('/');
-              const dateA = new Date(parseInt(partsA[2]), parseInt(partsA[1]) - 1, parseInt(partsA[0]));
-              
-              const partsB = b.split('/');
-              const dateB = new Date(parseInt(partsB[2]), parseInt(partsB[1]) - 1, parseInt(partsB[0]));
-              
-              return dateB.getTime() - dateA.getTime();
-          });
-
-          setOpcoesCategorias(categoriasIniciais);
-          setOpcoesSubcategorias(subcategoriasIniciais);
-          setOpcoesDatas(datasUnicasExibicao);
-        })
-        .catch(err => console.error("Erro ao buscar lançamentos", err));
+        const categoriasIniciais = [...new Set(lancamentosOrdenados.map(item => categoriaMapeada[item.categoria] || item.categoria).filter(Boolean))].sort();
+        const subcategoriasIniciais = [...new Set(lancamentosOrdenados.map(item => item.subcategoria).filter(Boolean))].sort();
+        
+        setOpcoesCategorias(categoriasIniciais);
+        setOpcoesSubcategorias(subcategoriasIniciais);
+      } catch (err) {
+        console.error("Erro ao buscar lançamentos", err);
+        setLancamentos([]);
+        setTodosLancamentosOriginais([]);
+        setOpcoesCategorias([]);
+        setOpcoesSubcategorias([]);
+      }
     }
   }, []);
 
   useEffect(() => {
     buscarLancamentos();
   }, [buscarLancamentos]);
+
+  useEffect(() => {
+    const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
+    const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
+
+    setPaginaAtual(1);
+    buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
+  }, [filtroDataInicio, filtroDataFinal, buscarLancamentos]);
 
   useEffect(() => {
     let filteredByCatSub = todosLancamentosOriginais;
@@ -137,28 +172,13 @@ const Lancamentos = () => {
     const novasOpcoesCategorias = [...new Set(filteredByCatSub.map(item => categoriaMapeada[item.categoria] || item.categoria).filter(Boolean))].sort();
     setOpcoesCategorias(novasOpcoesCategorias);
 
+    setLancamentos(filteredByCatSub);
+    setPaginaAtual(1);
   }, [filtroCategoria, filtroSubcategoria, todosLancamentosOriginais]);
 
-  const lancamentosFiltrados = lancamentos.filter((lancamento) => {
-    const categoriaExibicao = categoriaMapeada[lancamento.categoria] || lancamento.categoria;
-    const categoriaLower = categoriaExibicao ? categoriaExibicao.toLowerCase() : '';
-    const subcategoriaLower = lancamento.subcategoria ? lancamento.subcategoria.toLowerCase() : '';
-    
-    const dataLancamentoFormatada = formatarDataParaExibicao(lancamento.dataHora);
 
-    const matchCategoria = filtroCategoria
-      ? categoriaLower === filtroCategoria.toLowerCase()
-      : true;
-    const matchSubcategoria = filtroSubcategoria
-      ? subcategoriaLower === filtroSubcategoria.toLowerCase()
-      : true;
-    const matchData = filtroData ? dataLancamentoFormatada === filtroData : true;
-
-    return matchCategoria && matchSubcategoria && matchData;
-  });
-
-  const totalPaginas = Math.ceil(lancamentosFiltrados.length / itensPorPagina);
-  const lancamentosExibidos = lancamentosFiltrados.slice(
+  const totalPaginas = Math.ceil(lancamentos.length / itensPorPagina);
+  const lancamentosExibidos = lancamentos.slice(
     (paginaAtual - 1) * itensPorPagina,
     paginaAtual * itensPorPagina
   );
@@ -180,7 +200,9 @@ const Lancamentos = () => {
   const excluirConfirmado = async () => {
     try {
       await authService.deletarGasto(idParaExcluir);
-      buscarLancamentos();
+      const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
+      const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
+      buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
       setIdParaExcluir(null);
       setPaginaAtual(1);
     } catch (error) {
@@ -198,17 +220,15 @@ const Lancamentos = () => {
     try {
       const categoriaParaSalvar = categoriaReversaMapeada[lancamentoEditado.categoria] || lancamentoEditado.categoria;
       
-      // A dataHora já vem de EditarModal no formato DD/MM/AAAA.
-      // Não precisamos converter para ISO 8601 aqui.
-      const dataHoraParaApi = lancamentoEditado.dataHora; 
-      
       await authService.alterarGasto(lancamentoEditado.id, {
         valor: lancamentoEditado.valor,
         categoria: categoriaParaSalvar,
         subcategoria: lancamentoEditado.subcategoria,
-        dataHora: dataHoraParaApi, // Envia a data no formato DD/MM/AAAA
+        dataHora: lancamentoEditado.dataHora, 
       });
-      buscarLancamentos();
+      const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
+      const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
+      buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
       setModalAberto(false);
     } catch (error) {
       console.error("Erro ao salvar alteração:", error);
@@ -276,19 +296,28 @@ const Lancamentos = () => {
                     ))}
                   </select>
                 </td>
-                <td>
-                  <select
-                    value={filtroData}
-                    onChange={(e) => {
-                      setFiltroData(e.target.value);
-                      setPaginaAtual(1);
-                    }}
-                  >
-                    <option value="">Todas as Datas</option>
-                    {opcoesDatas.map((data) => (
-                      <option key={data} value={data}>{data}</option>
-                    ))}
-                  </select>
+                {/* Campos de filtro de data com labels */}
+                <td className="filter-date-inputs">
+                  <div className="date-input-group">
+                    <label htmlFor="filtroDataInicio">Data de Início:</label>
+                    <input
+                      type="date"
+                      id="filtroDataInicio"
+                      value={filtroDataInicio}
+                      onChange={(e) => setFiltroDataInicio(e.target.value)}
+                      title="Data de Início"
+                    />
+                  </div>
+                  <div className="date-input-group">
+                    <label htmlFor="filtroDataFinal">Data Final:</label>
+                    <input
+                      type="date"
+                      id="filtroDataFinal"
+                      value={filtroDataFinal}
+                      onChange={(e) => setFiltroDataFinal(e.target.value)}
+                      title="Data Final"
+                    />
+                  </div>
                 </td>
                 <td></td>
               </tr>
@@ -307,7 +336,7 @@ const Lancamentos = () => {
                   <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                   <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
                   <td>{item.subcategoria}</td>
-                  <td>{formatarDataParaExibicao(item.dataHora)}</td>
+                  <td>{formatarDataParaExibicao(item.dataHora)}</td> 
                   <td className="acoes">
                     <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
                     <button className="excluir" onClick={() => confirmarExclusao(item.id)}>Excluir</button>
@@ -336,20 +365,17 @@ const Lancamentos = () => {
       {novoModalAberto && (
         <NovoModal
           onClose={() => setNovoModalAberto(false)}
-          onSalvarNovo={(idUsuario, novoGasto) => {
-            // novoGasto.dataHora já vem do NovoModal em "DD/MM/AAAA".
-            // Não precisamos converter para ISO 8601 aqui.
-            const dataHoraParaApi = novoGasto.dataHora; 
-
-            authService.cadastrarGasto(idUsuario, { ...novoGasto, dataHora: dataHoraParaApi })
-              .then(() => {
-                buscarLancamentos();
-                setNovoModalAberto(false);
-              })
-              .catch(err => {
-                console.error("Erro ao cadastrar gasto:", err);
-                alert("Erro ao cadastrar novo lançamento.");
-              });
+          onSalvarNovo={async (idUsuario, novoGasto) => { 
+            try {
+              await authService.cadastrarGasto(idUsuario, novoGasto);
+              const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
+              const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
+              buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
+              setNovoModalAberto(false);
+            } catch (err) {
+              console.error("Erro ao cadastrar gasto:", err);
+              alert("Erro ao cadastrar novo lançamento.");
+            }
           }}
         />
       )}

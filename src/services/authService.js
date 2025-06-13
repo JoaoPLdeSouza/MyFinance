@@ -71,10 +71,27 @@ const alterarEmail = async (id, email, senha) => {
   }
 };
 
-const buscarLancamentosPorUsuario = async (idUsuario) => {
+/**
+ * Busca lançamentos por usuário, com filtro opcional por datas.
+ *
+ * @param {number} idUsuario O ID do usuário.
+ * @param {object} [filtrosData] Objeto opcional contendo as datas para filtro.
+ * @param {string} [filtrosData.dataInicio] Data de início para o filtro (formato "DD/MM/YYYY").
+ * @param {string} [filtrosData.dataFinal] Data final para o filtro (formato "DD/MM/YYYY").
+ */
+const buscarLancamentosPorUsuario = async (idUsuario, filtrosData = {}) => {
   try {
-    return await axios.get(`${API_URL}/gasto/buscar/categoria`, {
-      params: { idUsuario }
+    const { dataInicio, dataFinal } = filtrosData;
+
+    const requestBody = {};
+    if (dataInicio && dataFinal) {
+      requestBody.dataInicio = dataInicio;
+      requestBody.dataFinal = dataFinal;
+    }
+
+    return await axios.post(`${API_URL}/gasto/buscar/categoria`, requestBody, {
+      params: { idUsuario },
+      headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
     console.error("Erro ao buscar lançamentos por usuário:", error);
@@ -164,7 +181,7 @@ const authService = {
   delet,
   alterarDadosUsuario,
   alterarEmail,
-  buscarLancamentosPorUsuario,
+  buscarLancamentosPorUsuario, // Função atualizada e simplificada
   alterarGasto,
   cadastrarGasto,
   deletarGasto,

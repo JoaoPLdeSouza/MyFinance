@@ -19,7 +19,8 @@ const Home = () => {
         .then(res => setRenda(res.data.renda || 0))
         .catch(err => console.error("Erro ao buscar usuário:", err));
 
-      authService.buscarLancamentosPorUsuario(usuario.id)
+      // **ALTERAÇÃO AQUI: Passando um objeto vazio para buscar todos os lançamentos**
+      authService.buscarLancamentosPorUsuario(usuario.id, {})
         .then(res => {
           const todos = res.data;
           setGastos(todos);
@@ -47,7 +48,7 @@ const Home = () => {
   const categoryColors = {
     "investimento e poupanca": "#28a745", // Verde
     "necessidades": "#007bff",           // Azul
-    "desejos": "#dc3545",                 // Vermelho
+    "desejos": "#dc3545",                // Vermelho
   };
 
   const dadosGraficoBrutos = gastos.reduce((acc, item) => {
