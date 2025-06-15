@@ -1,18 +1,16 @@
 import axios from "axios";
 
-// Certifique-se de que esta URL está correta para seu backend
-// É uma boa prática ter isso em uma variável de ambiente ou um arquivo de configuração separado
 const API_URL = "http://localhost:9087"; 
 
 const login = async ({ email, senha }) => {
   try {
     return await axios.post(`${API_URL}/login`, { email, senha }, {
       headers: { "Content-Type": "application/json" },
-      timeout: 5000 // 5 segundos
+      timeout: 5000 
     });
   } catch (error) {
     console.error("Erro no login:", error);
-    throw error; // Propagar o erro para o componente que chamou
+    throw error; 
   }
 };
 
@@ -45,7 +43,6 @@ const alterarSenha = async (id, request) => {
 
 const delet = async (id) => {
   try {
-    // Note: Esta função parece ser para `usuario_gasto/delete`, verificar se é o endpoint correto
     return await axios.delete(`${API_URL}/usuario_gasto/delete?id=${id}`);
   } catch (error) {
     console.error("Erro ao deletar usuário_gasto:", error);
@@ -73,36 +70,37 @@ const alterarEmail = async (id, email, senha) => {
 
 /**
  * Busca lançamentos por usuário, com filtro opcional por datas.
+ * Se dataInicio ou dataFinal não forem fornecidas, elas serão enviadas como strings vazias.
  *
  * @param {number} idUsuario O ID do usuário.
  * @param {object} [filtrosData] Objeto opcional contendo as datas para filtro.
- * @param {string} [filtrosData.dataInicio] Data de início para o filtro (formato "DD/MM/YYYY").
- * @param {string} [filtrosData.dataFinal] Data final para o filtro (formato "DD/MM/YYYY").
+ * @param {string} [filtrosData.dataInicio] Data de início para o filtro (formato "DD/MM/YYYY" ou vazio).
+ * @param {string} [filtrosData.dataFinal] Data final para o filtro (formato "DD/MM/YYYY" ou vazio).
  */
 const buscarLancamentosPorUsuario = async (idUsuario, filtrosData = {}) => {
   try {
-    const { dataInicio, dataFinal } = filtrosData;
+    const { dataInicio = "", dataFinal = "" } = filtrosData; // Define "" como padrão
 
-    const requestBody = {};
-    if (dataInicio && dataFinal) {
-      requestBody.dataInicio = dataInicio;
-      requestBody.dataFinal = dataFinal;
-    }
-
-    return await axios.post(`${API_URL}/gasto/buscar/categoria`, requestBody, {
-      params: { idUsuario },
+    const requestBody = {
+      dataInicio: dataInicio,
+      dataFinal: dataFinal
+    };
+    
+    const response = await axios.post(`${API_URL}/gasto/buscar/categoria`, requestBody, {
+      params: { idUsuario }, 
       headers: { "Content-Type": "application/json" }
     });
+    return response; // Retorna o objeto de resposta completo (incluindo .data)
   } catch (error) {
-    console.error("Erro ao buscar lançamentos por usuário:", error);
+    console.error("Erro ao buscar lançamentos por usuário:", error.response?.data || error.message);
     throw error;
   }
 };
 
 const alterarGasto = async (id, gasto) => {
   try {
-    return await axios.put(`${API_URL}/gasto/alterar`, gasto, {
-      params: { id }
+    return await axios.put(`${API_URL}/gasto/alterar`, gasto, { 
+      params: { id } 
     });
   } catch (error) {
     console.error("Erro ao alterar gasto:", error);
@@ -113,7 +111,7 @@ const alterarGasto = async (id, gasto) => {
 const cadastrarGasto = async (idUsuario, dados) => {
   try {
     return await axios.post(`${API_URL}/gasto/cadastrar`, dados, {
-      params: { idUsuario }
+      params: { idUsuario } 
     });
   } catch (error) {
     console.error("Erro ao cadastrar gasto:", error);
@@ -124,7 +122,7 @@ const cadastrarGasto = async (idUsuario, dados) => {
 const deletarGasto = async (id) => {
   try {
     return await axios.delete(`${API_URL}/gasto/deletar`, {
-      params: { id }
+      params: { id } 
     });
   } catch (error) {
     console.error("Erro ao deletar gasto:", error);
@@ -140,25 +138,15 @@ const deletarGasto = async (id) => {
  */
 const gerarPlano = async (idUsuario, valorPraPoupar = null) => {
   try {
-    // Constrói a URL base com idUsuario como query parameter.
     let url = `${API_URL}/plano?idUsuario=${idUsuario}`;
-
-    // Se valorPraPoupar for fornecido (não nulo/indefinido) e for um número válido,
-    // adicione-o como um parâmetro de query adicional na URL.
-    // parseFloat garante que o valor é um número, e encodeURIComponent o codifica para a URL.
     if (valorPraPoupar !== null && valorPraPoupar !== undefined && !isNaN(parseFloat(valorPraPoupar))) {
       url += `&valorPraPoupar=${encodeURIComponent(parseFloat(valorPraPoupar))}`;
     }
-
-    // Realiza a requisição POST para a URL construída.
-    // O segundo argumento de axios.post é o corpo da requisição (body),
-    // que é null aqui, pois os parâmetros são enviados na URL (query string),
-    // conforme o @RequestParam do seu backend.
     const response = await axios.post(url, null); 
     return response;
   } catch (error) {
     console.error("Erro ao gerar plano:", error);
-    throw error; // Propagar o erro para o componente para tratamento de UI
+    throw error; 
   }
 };
 
@@ -181,7 +169,7 @@ const authService = {
   delet,
   alterarDadosUsuario,
   alterarEmail,
-  buscarLancamentosPorUsuario, // Função atualizada e simplificada
+  buscarLancamentosPorUsuario, 
   alterarGasto,
   cadastrarGasto,
   deletarGasto,

@@ -102,21 +102,19 @@ const Lancamentos = () => {
   const buscarLancamentos = useCallback(async (dataInicio = "", dataFinal = "") => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     if (usuario?.id) {
-      const filtros = {};
-      // APENAS adiciona a data se ela NÃO for vazia
-      if (dataInicio) {
-        filtros.dataInicio = dataInicio;
-      }
-      if (dataFinal) {
-        filtros.dataFinal = dataFinal;
-      }
+      const filtros = {
+        dataInicio: dataInicio,
+        dataFinal: dataFinal
+      };
       
       try {
-        const res = await authService.buscarLancamentosPorUsuario(usuario.id, filtros);
+        // Correção aqui: Acessar response.data para obter o array de lançamentos
+        const response = await authService.buscarLancamentosPorUsuario(usuario.id, filtros);
+        const dadosLancamentos = response.data; //
         
-        const lancamentosOrdenados = res.data.sort((a, b) => {
-          const dateA = parseDateDDMMYYYY(a.dataHora); // A API está retornando DD/MM/YYYY
-          const dateB = parseDateDDMMYYYY(b.dataHora); // A API está retornando DD/MM/YYYY
+        const lancamentosOrdenados = dadosLancamentos.sort((a, b) => { 
+          const dateA = parseDateDDMMYYYY(a.dataHora); 
+          const dateB = parseDateDDMMYYYY(b.dataHora); 
 
           if (dateA && dateB && dateA.getTime() === dateB.getTime()) {
             return b.id - a.id;
@@ -150,10 +148,11 @@ const Lancamentos = () => {
     const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
     const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
 
-    setPaginaAtual(1);
+    setPaginaAtual(1); 
     buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
   }, [filtroDataInicio, filtroDataFinal, buscarLancamentos]);
 
+  // useEffect para aplicar filtros locais de categoria e subcategoria
   useEffect(() => {
     let filteredByCatSub = todosLancamentosOriginais;
 
@@ -200,6 +199,7 @@ const Lancamentos = () => {
   const excluirConfirmado = async () => {
     try {
       await authService.deletarGasto(idParaExcluir);
+      // Após exclusão, re-busca todos os lançamentos com os filtros de data atuais
       const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
       const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
       buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
@@ -226,6 +226,7 @@ const Lancamentos = () => {
         subcategoria: lancamentoEditado.subcategoria,
         dataHora: lancamentoEditado.dataHora, 
       });
+      // Após alteração, re-busca todos os lançamentos com os filtros de data atuais
       const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
       const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
       buscarLancamentos(dataInicioFormatada, dataFinalFormatada);
@@ -254,6 +255,69 @@ const Lancamentos = () => {
           </div>
         </div>
 
+        {/* NOVA SEÇÃO DE FILTROS AQUI, FORA DA TABELA */}
+        {filtrosVisiveis && (
+          <div className="filters-section">
+            <div className="filter-group">
+              <label htmlFor="filtroCategoria">Categoria:</label>
+              <select
+                id="filtroCategoria"
+                value={filtroCategoria}
+                onChange={(e) => {
+                  setFiltroCategoria(e.target.value);
+                  setPaginaAtual(1); 
+                  setFiltroSubcategoria(""); 
+                }}
+              >
+                <option value="">Todas as Categorias</option>
+                {opcoesCategorias.map((categoria) => (
+                  <option key={categoria} value={categoria}>{categoria}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="filtroSubcategoria">Subcategoria:</label>
+              <select
+                id="filtroSubcategoria"
+                value={filtroSubcategoria}
+                onChange={(e) => {
+                  setFiltroSubcategoria(e.target.value);
+                  setPaginaAtual(1);
+                  // Não resete filtroCategoria aqui, pois é um filtro independente agora
+                }}
+              >
+                <option value="">Todas as Subcategorias</option>
+                {opcoesSubcategorias.map((subcategoria) => (
+                  <option key={subcategoria} value={subcategoria}>{subcategoria}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group date-filter-group">
+              <label htmlFor="filtroDataInicio">Data de Início:</label>
+              <input
+                type="date"
+                id="filtroDataInicio"
+                value={filtroDataInicio}
+                onChange={(e) => setFiltroDataInicio(e.target.value)}
+                title="Data de Início"
+              />
+            </div>
+
+            <div className="filter-group date-filter-group">
+              <label htmlFor="filtroDataFinal">Data Final:</label>
+              <input
+                type="date"
+                id="filtroDataFinal"
+                value={filtroDataFinal}
+                onChange={(e) => setFiltroDataFinal(e.target.value)}
+                title="Data Final"
+              />
+            </div>
+          </div>
+        )}
+
         <table className="lancamentos-table">
           <thead>
             <tr>
@@ -263,65 +327,6 @@ const Lancamentos = () => {
               <th>Data</th>
               <th>Ações</th>
             </tr>
-            {filtrosVisiveis && (
-              <tr className="filter-row">
-                <td></td>
-                <td>
-                  <select
-                    value={filtroCategoria}
-                    onChange={(e) => {
-                      setFiltroCategoria(e.target.value);
-                      setPaginaAtual(1);
-                      setFiltroSubcategoria("");
-                    }}
-                  >
-                    <option value="">Todas as Categorias</option>
-                    {opcoesCategorias.map((categoria) => (
-                      <option key={categoria} value={categoria}>{categoria}</option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    value={filtroSubcategoria}
-                    onChange={(e) => {
-                      setFiltroSubcategoria(e.target.value);
-                      setPaginaAtual(1);
-                      setFiltroCategoria("");
-                    }}
-                  >
-                    <option value="">Todas as Subcategorias</option>
-                    {opcoesSubcategorias.map((subcategoria) => (
-                      <option key={subcategoria} value={subcategoria}>{subcategoria}</option>
-                    ))}
-                  </select>
-                </td>
-                {/* Campos de filtro de data com labels */}
-                <td className="filter-date-inputs">
-                  <div className="date-input-group">
-                    <label htmlFor="filtroDataInicio">Data de Início:</label>
-                    <input
-                      type="date"
-                      id="filtroDataInicio"
-                      value={filtroDataInicio}
-                      onChange={(e) => setFiltroDataInicio(e.target.value)}
-                      title="Data de Início"
-                    />
-                  </div>
-                  <div className="date-input-group">
-                    <label htmlFor="filtroDataFinal">Data Final:</label>
-                    <input
-                      type="date"
-                      id="filtroDataFinal"
-                      value={filtroDataFinal}
-                      onChange={(e) => setFiltroDataFinal(e.target.value)}
-                      title="Data Final"
-                    />
-                  </div>
-                </td>
-                <td></td>
-              </tr>
-            )}
           </thead>
           <tbody>
             {lancamentosExibidos.length === 0 ? (
@@ -336,7 +341,7 @@ const Lancamentos = () => {
                   <td>{item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                   <td>{categoriaMapeada[item.categoria] || item.categoria}</td>
                   <td>{item.subcategoria}</td>
-                  <td>{formatarDataParaExibicao(item.dataHora)}</td> 
+                  <td>{formatarDataParaExibicao(item.dataHora)}</td>
                   <td className="acoes">
                     <button className="editar" onClick={() => abrirModal(item)}>Editar</button>
                     <button className="excluir" onClick={() => confirmarExclusao(item.id)}>Excluir</button>
@@ -368,6 +373,7 @@ const Lancamentos = () => {
           onSalvarNovo={async (idUsuario, novoGasto) => { 
             try {
               await authService.cadastrarGasto(idUsuario, novoGasto);
+              // Após cadastro, re-busca todos os lançamentos com os filtros de data atuais
               const dataInicioFormatada = filtroDataInicio ? formatarDataParaAPI(filtroDataInicio) : "";
               const dataFinalFormatada = filtroDataFinal ? formatarDataParaAPI(filtroDataFinal) : "";
               buscarLancamentos(dataInicioFormatada, dataFinalFormatada);

@@ -19,10 +19,10 @@ const Home = () => {
         .then(res => setRenda(res.data.renda || 0))
         .catch(err => console.error("Erro ao buscar usuário:", err));
 
-      // **ALTERAÇÃO AQUI: Passando um objeto vazio para buscar todos os lançamentos**
-      authService.buscarLancamentosPorUsuario(usuario.id, {})
-        .then(res => {
-          const todos = res.data;
+      // Passando um objeto vazio. dataInicio e dataFinal serão "" por padrão no service.
+      authService.buscarLancamentosPorUsuario(usuario.id, {}) 
+        .then(res => { // <--- AQUI: Agora esperamos o objeto 'res' completo do Axios
+          const todos = res.data; // <--- ACESSAMOS res.data para obter os lançamentos
           setGastos(todos);
 
           const totalGasto = todos
@@ -47,8 +47,8 @@ const Home = () => {
 
   const categoryColors = {
     "investimento e poupanca": "#28a745", // Verde
-    "necessidades": "#007bff",           // Azul
-    "desejos": "#dc3545",                // Vermelho
+    "necessidades": "#007bff",            // Azul
+    "desejos": "#dc3545",                 // Vermelho
   };
 
   const dadosGraficoBrutos = gastos.reduce((acc, item) => {

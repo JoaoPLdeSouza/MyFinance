@@ -1,15 +1,12 @@
 /* src/assets/Lancamentos.css */
 
-/* --- SEUS ESTILOS EXISTENTES --- */
-
 .lancamentos-container {
-  padding: 30px;
-  background-color: #f7f9fc;
-  border-radius: 12px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-bar {
@@ -19,243 +16,247 @@
   margin-bottom: 20px;
 }
 
-.header-buttons {
+.header-bar h2 {
+  color: #333;
+  margin: 0;
+}
+
+.header-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.novo-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.novo-button:hover {
+  background-color: #0056b3;
+}
+
+.toggle-filtros-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.toggle-filtros-button:hover {
+  background-color: #5a6268;
+}
+
+/* Estilos para a nova seção de filtros */
+.filters-section {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas menores */
+  gap: 15px; /* Espaçamento entre os grupos de filtro */
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  align-items: flex-end; /* Alinha os itens na parte inferior */
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px; /* Largura mínima para os grupos de filtro */
+  flex: 1; /* Permite que os grupos cresçam e diminuam */
+}
+
+.filter-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.filter-group select,
+.filter-group input[type="date"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95em;
+  width: 100%; /* Garante que os inputs e selects preencham o grupo */
+  box-sizing: border-box; /* Inclui padding e borda na largura total */
+}
+
+/* Ajustes específicos para os campos de data */
+.filter-group.date-filter-group {
+  min-width: 150px; /* Pode ser um pouco menor se necessário */
+}
+
+/* Para as datas ficarem em colunas separadas dentro do grupo */
+.date-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaço entre Data de Início e Data Final */
 }
 
 .lancamentos-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .lancamentos-table th,
 .lancamentos-table td {
-  padding: 12px;
+  border: 1px solid #ddd;
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
 .lancamentos-table th {
-  background-color: #f0f6ff;
-  color: #2c3e50;
-}
-
-.acoes { /* Adicionado para controlar o layout dos botões na coluna de ações */
-  display: flex; /* Usa flexbox para os botões */
-  gap: 6px; /* Espaçamento entre os botões */
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha se não houver espaço suficiente */
-  justify-content: flex-start; /* Alinha os botões ao início */
-  align-items: center;
-}
-
-.acoes button {
-  /* margin-right: 6px; */ /* Removido, pois gap já cuida do espaçamento */
-  padding: 6px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap; /* Impede que o texto do botão quebre em várias linhas */
-}
-
-.editar {
-  background-color: #f39c12;
-  color: white;
-}
-
-.excluir {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.novo-button {
-  padding: 10px 16px;
-  background-color: #4e8de3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.novo-button:hover {
-  background-color: #6cc1f0;
-}
-
-.toggle-filtros-button {
-  padding: 10px 16px;
   background-color: #007bff;
   color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  text-transform: uppercase;
 }
 
-.toggle-filtros-button:hover {
-  background-color: #0056b3;
+.lancamentos-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.lancamentos-table tbody tr:hover {
+  background-color: #e9e9e9;
+}
+
+.lancamentos-table td.acoes {
+  text-align: center;
+  white-space: nowrap; /* Evita que os botões quebrem linha */
+}
+
+.lancamentos-table .acoes button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  margin: 0 5px;
+  transition: background-color 0.2s ease;
+}
+
+.lancamentos-table .acoes .editar {
+  background-color: #ffc107;
+  color: white;
+}
+
+.lancamentos-table .acoes .editar:hover {
+  background-color: #e0a800;
+}
+
+.lancamentos-table .acoes .excluir {
+  background-color: #dc3545;
+  color: white;
+}
+
+.lancamentos-table .acoes .excluir:hover {
+  background-color: #c82333;
+}
+
+.no-results-message {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  padding: 20px;
 }
 
 .paginacao {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  margin-top: auto;
-  gap: 10px;
+  margin-top: 20px;
 }
 
 .paginacao button {
-  padding: 6px 12px;
-  border: none;
-  background-color: #4e8de3;
+  padding: 10px 15px;
+  border: 1px solid #007bff;
+  background-color: #007bff;
   color: white;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .paginacao button:disabled {
-  background-color: #cccccc;
+  background-color: #e9ecef;
+  border-color: #e9ecef;
+  color: #6c757d;
   cursor: not-allowed;
 }
 
-.paginacao span {
-  font-size: 14px;
+.paginacao button:hover:not(:disabled) {
+  background-color: #0056b3;
 }
 
-/* Popup overlay */
+.paginacao span {
+  margin: 0 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Estilos para o popup de confirmação */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
-/* Popup box */
 .popup {
-  background-color: white;
-  padding: 25px;
+  background: white;
+  padding: 30px;
   border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   max-width: 400px;
+  width: 90%;
 }
 
-/* Buttons */
-.popup-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
+.popup p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  color: #333;
 }
 
-.popup-buttons .btn-cancelar {
-  background-color: #6cc1f0;
-  color: white;
-  border: none;
+.popup-buttons button {
   padding: 10px 20px;
-  border-radius: 6px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 1em;
+  margin: 0 10px;
+  transition: background-color 0.3s ease;
 }
 
 .popup-buttons .btn-confirmar {
-  background-color: #e74c3c;
+  background-color: #dc3545;
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.popup-buttons .btn-cancelar:hover {
-  background-color: #b3d7ff;
 }
 
 .popup-buttons .btn-confirmar:hover {
-  background-color: #ffb3b3;
+  background-color: #c82333;
 }
 
-/* ESTILOS PARA OS FILTROS - AGORA COM SELECT */
-.filter-row td {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+.popup-buttons .btn-cancelar {
+  background-color: #6c757d;
+  color: white;
 }
 
-.filter-row input,
-.filter-row select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  box-sizing: border-box;
-  background-color: white;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20512%22%3E%3Cpath%20fill%3D%22%23343a40%22%20d%3D%22M64%20192L0%20256h256L192%20192z%22%2F%3E%3C%2Fsvg%3E');
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 12px;
-  padding-right: 30px;
-}
-
-/* Ajusta as larguras das colunas de filtro na thead */
-.lancamentos-table th:nth-child(1), /* Valor */
-.lancamentos-table td:nth-child(1) {
-  width: 15%;
-  min-width: 100px;
-}
-
-.lancamentos-table th:nth-child(2), /* Categoria */
-.lancamentos-table td:nth-child(2) {
-  width: 20%;
-  min-width: 150px;
-}
-
-.lancamentos-table th:nth-child(3), /* Subcategoria */
-.lancamentos-table td:nth-child(3) {
-  width: 20%;
-  min-width: 150px;
-}
-
-.lancamentos-table th:nth-child(4), /* Data */
-.lancamentos-table td:nth-child(4) {
-  width: 15%;
-  min-width: 120px;
-}
-
-.lancamentos-table th:nth-child(5), /* Ações */
-.lancamentos-table td:nth-child(5) {
-  width: 18%; /* Aumentado para dar mais espaço */
-  min-width: 160px; /* Aumentado significativamente para acomodar os botões */
-}
-
-
-.filter-row input::placeholder {
-  color: #888;
-}
-
-.filter-row input:focus,
-.filter-row select:focus {
-  border-color: #4e8de3;
-  box-shadow: 0 0 0 0.2rem rgba(78, 141, 227, 0.25);
-  outline: none;
-}
-
-/* Mensagem quando não há resultados após filtrar */
-.no-results-message {
-  text-align: center;
-  padding: 20px;
-  color: #777;
-  font-style: italic;
+.popup-buttons .btn-cancelar:hover {
+  background-color: #5a6268;
 }
