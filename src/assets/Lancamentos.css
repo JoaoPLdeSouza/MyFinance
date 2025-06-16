@@ -41,12 +41,12 @@
 }
 
 .toggle-filtros-button {
-  background-color: #6c757d;
+  background-color: #007bff;
   color: white;
 }
 
 .toggle-filtros-button:hover {
-  background-color: #5a6268;
+  background-color: #0056b3;
 }
 
 /* Estilos para a nova seção de filtros */
@@ -253,10 +253,11 @@
 }
 
 .popup-buttons .btn-cancelar {
-  background-color: #6c757d;
+  background-color: #007bff;
   color: white;
+  margin-top: 10px;
 }
 
 .popup-buttons .btn-cancelar:hover {
-  background-color: #5a6268;
+  background-color: #0056b3;
 }
