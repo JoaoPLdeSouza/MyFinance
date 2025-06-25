@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "../assets/Header.css";
 import { FaBars, FaCog } from "react-icons/fa";
 import authService from "../services/authService";
+import ExclPop from "./ExclPop";
 
 const Header = ({ toggleSidebar }) => {
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [showMenu, setShowMenu] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const menuRef = useRef();
   const navigate = useNavigate();
 
@@ -40,11 +42,18 @@ const Header = ({ toggleSidebar }) => {
       const usuario = JSON.parse(localStorage.getItem("usuario"));
       await authService.delet(usuario.id);
       localStorage.removeItem("usuario");
-      alert("Conta deletada com sucesso.");
-      navigate("/login");
+      setShowConfirmModal(false); // Fecha o modal de confirmação
+      setShowSuccessPopup(true); // Mostra o pop-up de sucesso
+
+      // Redireciona após 3 segundos
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000); // 3 segundos
+      
     } catch (err) {
-      alert("Erro ao deletar conta.");
+      alert("Erro ao deletar conta."); // Mantido o alert de erro.
       console.error(err);
+      setShowConfirmModal(false); // Fecha o modal de confirmação mesmo com erro
     }
   };
 
@@ -70,7 +79,7 @@ const Header = ({ toggleSidebar }) => {
           {showMenu && (
             <div className="config-menu">
               <button onClick={() => goTo("/config")}>Meu perfil</button>
-              <button onClick={() => setShowModal(true)} className="deletar-opcao">Deletar Conta</button>
+              <button onClick={() => setShowConfirmModal(true)} className="deletar-opcao">Deletar Conta</button>
             </div>
           )}
         </div>
@@ -78,15 +87,20 @@ const Header = ({ toggleSidebar }) => {
         <button className="logout-button" onClick={handleLogout}>Sair</button>
       </div>
 
-      {/* Modal de Confirmação */}
-      {showModal && (
-        <div className="modal-confirmacao">
-          <div className="modal-conteudo">
-            <p>Tem certeza que deseja excluir sua conta?</p>
-            <button className="confirmar-btn" onClick={handleDeleteAccount}>Sim, excluir</button>
-            <button className="cancelar-btn" onClick={() => setShowModal(false)}>Cancelar</button>
-          </div>
-        </div>
+      {/* Pop-up de Confirmação de Deleção */}
+      {showConfirmModal && (
+        <ExclPop
+          message="Tem certeza que deseja excluir sua conta? Esta ação é irreversível."
+          onConfirm={handleDeleteAccount}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      )}
+
+      {/* Pop-up de Sucesso após a Deleção (sem botões e com temporizador) */}
+      {showSuccessPopup && (
+        <ExclPop
+          message="Conta deletada com sucesso!"
+        />
       )}
     </header>
   );

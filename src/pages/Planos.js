@@ -5,25 +5,30 @@ import authService from "../services/authService";
 import "../assets/Planos.css";
 import VEcononoPopup from "../components/VEcononoPopup";
 
+// Componente principal para a página de Planos Financeiros
 const Planos = () => {
-  const [dadosPlano, setDadosPlano] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showValueInputPopup, setShowValueInputPopup] = useState(false);
-  const [todosOsPlanos, setTodosOsPlanos] = useState([]);
-  const [currentPlanIndex, setCurrentPlanIndex] = useState(0);
+  // Estados para gerenciar os dados do plano, carregamento, erros, popups e navegação
+  const [dadosPlano, setDadosPlano] = useState(null); // Armazena os dados do plano financeiro atual
+  const [loading, setLoading] = useState(true); // Indica se a página está carregando dados
+  const [error, setError] = useState(null); // Armazena mensagens de erro
+  const [showValueInputPopup, setShowValueInputPopup] = useState(false); // Controla a visibilidade do popup de entrada de valor
+  const [todosOsPlanos, setTodosOsPlanos] = useState([]); // Armazena todos os planos financeiros do usuário
+  const [currentPlanIndex, setCurrentPlanIndex] = useState(0); // Índice do plano atualmente exibido
 
+  // Mapeamento de cores para cada categoria de despesa, usado nos gráficos
   const categoriaCores = {
-    NECESSIDADES: '#007bff',          // Azul
-    DESEJOS: '#dc3545',           // Vermelho
+    NECESSIDADES: '#007bff',           // Azul
+    DESEJOS: '#dc3545',               // Vermelho
     INVESTIMENTO_E_POUPANCA: '#28a745', // Verde
-    ECONOMIA_PLANEJADA: '#8A2BE2'    // Roxo
+    ECONOMIA_PLANEJADA: '#8A2BE2'      // Roxo
   };
 
+  // Função para formatar um valor numérico para o formato de moeda BRL (Real Brasileiro)
   const formatarValor = (valor) => {
     return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
+  // Mapeamento de nomes de categorias para exibição amigável ao usuário
   const categoriaMapeada = {
     NECESSIDADES: "Necessidades",
     DESEJOS: "Desejos",
@@ -31,32 +36,49 @@ const Planos = () => {
     ECONOMIA_PLANEJADA: "Economia Planejada"
   };
 
+  // Função para preparar os dados para os gráficos do Google Charts
   const prepararDadosParaGrafico = (dataArray, titulo) => {
+    // Agrupa os valores por categoria
     const categoriasAgrupadas = dataArray.reduce((acc, item) => {
       acc[item.categoria] = (acc[item.categoria] || 0) + item.valor;
       return acc;
     }, {});
 
-    const dados = [["Categoria", titulo]];
+    // Define os cabeçalhos das colunas para o gráfico (Categoria, Título, Tooltip HTML)
+    const dados = [["Categoria", titulo, { type: 'string', role: 'tooltip', p: { html: true } }]];
     const coresOrdenadas = [];
     const seriesOptions = {};
 
+    // Obtém as chaves das categorias em ordem definida
     const orderedCategories = Object.keys(categoriaCores);
     let seriesIndex = 0;
 
+    // Itera sobre as categorias ordenadas e adiciona os dados ao array para o gráfico
     orderedCategories.forEach(categoriaKey => {
       if (categoriasAgrupadas.hasOwnProperty(categoriaKey)) {
-        dados.push([categoriaMapeada[categoriaKey], categoriasAgrupadas[categoriaKey]]);
+        const valorNumerico = categoriasAgrupadas[categoriaKey];
+        const valorFormatado = formatarValor(valorNumerico);
+        // Cria o HTML para o tooltip personalizado do gráfico
+        const tooltipHtml = `<div style="padding: 10px; border: 1px solid #ccc; background-color: #fff; font-size: 14px;">` +
+                             `<strong>${categoriaMapeada[categoriaKey]}</strong>: ${valorFormatado}` +
+                             `</div>`;
+        dados.push([categoriaMapeada[categoriaKey], valorNumerico, tooltipHtml]);
         coresOrdenadas.push(categoriaCores[categoriaKey]);
         seriesOptions[seriesIndex] = { color: categoriaCores[categoriaKey] };
         seriesIndex++;
       }
     });
 
+    // Adiciona quaisquer outras categorias não predefinidas com uma cor padrão
     for (const categoriaKey in categoriasAgrupadas) {
       if (!orderedCategories.includes(categoriaKey)) {
-        dados.push([categoriaMapeada[categoriaKey] || categoriaKey, categoriasAgrupadas[categoriaKey]]);
-        coresOrdenadas.push('#cccccc');
+        const valorNumerico = categoriasAgrupadas[categoriaKey];
+        const valorFormatado = formatarValor(valorNumerico);
+        const tooltipHtml = `<div style="padding: 10px; border: 1px solid #ccc; background-color: #fff; font-size: 14px;">` +
+                             `<strong>${categoriaMapeada[categoriaKey] || categoriaKey}</strong>: ${valorFormatado}` +
+                             `</div>`;
+        dados.push([categoriaMapeada[categoriaKey] || categoriaKey, valorNumerico, tooltipHtml]);
+        coresOrdenadas.push('#cccccc'); // Cor padrão para categorias não mapeadas
         seriesOptions[seriesIndex] = { color: '#cccccc' };
         seriesIndex++;
       }
@@ -65,6 +87,7 @@ const Planos = () => {
     return { data: dados, colors: coresOrdenadas, series: seriesOptions };
   };
 
+  // Função assíncrona para carregar os planos financeiros do usuário
   const carregarPlanosDoUsuario = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -77,16 +100,18 @@ const Planos = () => {
       const response = await authService.buscarPlanosPorUsuario(usuario.id);
 
       if (Array.isArray(response.data) && response.data.length > 0) {
-        // Filtra e ordena os planos para pegar os mais recentes por ID
+        // Filtra planos pelo ID do usuário e ordena pelo ID (mais recente primeiro)
         const planosDoUsuario = response.data
           .filter((plano) => plano.idUsuario === usuario.id)
-          .sort((a, b) => b.id - a.id); // <--- MUDANÇA AQUI: Ordena por ID de forma decrescente
+          .sort((a, b) => b.id - a.id);
 
-        const ultimos3Planos = planosDoUsuario.slice(0, 3); // Pega os 3 planos com os IDs mais altos
+        // Pega apenas os 3 últimos planos
+        const ultimos3Planos = planosDoUsuario.slice(0, 3);
         setTodosOsPlanos(ultimos3Planos);
 
+        // Define o primeiro plano como o plano atual a ser exibido
         if (ultimos3Planos.length > 0) {
-          setDadosPlano(ultimos3Planos[0]); // Exibe o plano com o maior ID na página 1
+          setDadosPlano(ultimos3Planos[0]);
           setCurrentPlanIndex(0);
         } else {
           setDadosPlano(null);
@@ -99,6 +124,7 @@ const Planos = () => {
       }
     } catch (err) {
       console.error("Erro ao carregar os planos:", err);
+      // Trata diferentes tipos de erros e define a mensagem de erro
       if (err.response && err.response.data && err.response.data.message) {
         setError(`Erro ao carregar planos: ${err.response.data.message}`);
       } else if (err.message) {
@@ -111,8 +137,9 @@ const Planos = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // Dependência vazia, pois não depende de nenhum valor externo reativo
 
+  // Função assíncrona para gerar um novo plano financeiro padrão
   const gerarNovoPlano = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -124,6 +151,7 @@ const Planos = () => {
 
       const response = await authService.gerarPlano(usuario.id);
 
+      // Se o plano for gerado com sucesso, recarrega os planos do usuário
       if (response.data && response.data.id) {
         carregarPlanosDoUsuario();
       } else {
@@ -132,6 +160,7 @@ const Planos = () => {
     } catch (err) {
       console.error("Erro ao gerar novo plano padrão:", err);
       let errorMessage = "Não foi possível gerar um novo plano financeiro. Tente novamente.";
+      // Trata diferentes tipos de erros e define a mensagem de erro
       if (err.response) {
         if (err.response.data && err.response.data.message) {
           errorMessage = err.response.data.message;
@@ -148,12 +177,13 @@ const Planos = () => {
     } finally {
       setLoading(false);
     }
-  }, [carregarPlanosDoUsuario]);
+  }, [carregarPlanosDoUsuario]); // Depende da função carregarPlanosDoUsuario
 
+  // Função assíncrona para gerar um novo plano financeiro com base em um valor de economia mensal
   const gerarNovoPlanoComValor = useCallback(async (valor) => {
     setLoading(true);
     setError(null);
-    setShowValueInputPopup(false);
+    setShowValueInputPopup(false); // Fecha o popup após a submissão
     try {
       const usuario = JSON.parse(localStorage.getItem("usuario"));
       if (!usuario || !usuario.id) {
@@ -162,6 +192,7 @@ const Planos = () => {
 
       const response = await authService.gerarPlano(usuario.id, valor);
 
+      // Se o plano for gerado com sucesso, recarrega os planos do usuário
       if (response.data && response.data.id) {
         carregarPlanosDoUsuario();
       } else {
@@ -170,6 +201,7 @@ const Planos = () => {
     } catch (err) {
       console.error("Erro ao gerar novo plano com valor:", err);
       let errorMessage = "Ocorreu um erro ao gerar o plano com valor. Tente novamente.";
+      // Trata diferentes tipos de erros e define a mensagem de erro
       if (err.response) {
         if (err.response.data && err.response.data.message) {
           errorMessage = err.response.data.message;
@@ -186,8 +218,9 @@ const Planos = () => {
     } finally {
       setLoading(false);
     }
-  }, [carregarPlanosDoUsuario]);
+  }, [carregarPlanosDoUsuario]); // Depende da função carregarPlanosDoUsuario
 
+  // Lida com a navegação para o plano anterior na lista
   const handlePreviousPlan = () => {
     const newIndex = currentPlanIndex + 1;
     if (newIndex < todosOsPlanos.length) {
@@ -196,6 +229,7 @@ const Planos = () => {
     }
   };
 
+  // Lida com a navegação para o próximo plano na lista
   const handleNextPlan = () => {
     const newIndex = currentPlanIndex - 1;
     if (newIndex >= 0) {
@@ -204,12 +238,21 @@ const Planos = () => {
     }
   };
 
+  // Efeito colateral para carregar os planos do usuário quando o componente é montado
   useEffect(() => {
     carregarPlanosDoUsuario();
-  }, [carregarPlanosDoUsuario]);
+  }, [carregarPlanosDoUsuario]); // Garante que a função seja chamada quando carregarPlanosDoUsuario mudar (o que é improvável devido ao useCallback)
 
+  // Verifica se há múltiplos planos para habilitar a navegação
   const hasMultiplePlans = todosOsPlanos.length > 1;
 
+  // Opções globais de loader para Google Charts com localização em pt-BR
+  const chartLoaders = {
+    charts: ["PieChart", "BarChart"],
+    language: "pt-BR", // Define o idioma para formatação numérica
+  };
+
+  // Renderização do componente
   return (
     <Layout>
       <div className="planos-container">
@@ -219,7 +262,9 @@ const Planos = () => {
           e oferece recomendações de ajustes e identifica áreas de risco em suas despesas.
         </p>
 
+        {/* Grupo de ações para gerar planos */}
         <div className="planos-actions-group">
+          {/* Card para gerar plano padrão */}
           <div className="plan-action-card">
             <p className="action-description">
               Gere um plano com base nos seus gastos atuais para identificar áreas de risco e oportunidades de ajuste,
@@ -228,12 +273,13 @@ const Planos = () => {
             <button
               className="gerar-plano-button"
               onClick={gerarNovoPlano}
-              disabled={loading}
+              disabled={loading} // Desabilita o botão durante o carregamento
             >
               {loading ? "Gerando Plano..." : "Gerar Plano Padrão"}
             </button>
           </div>
 
+          {/* Card para gerar plano com valor de economia mensal */}
           <div className="plan-action-card">
             <p className="action-description">
               Quer planejar sua economia mensal? Clique no botão abaixo e informe
@@ -242,14 +288,15 @@ const Planos = () => {
             </p>
             <button
               className="gerar-plano-button"
-              onClick={() => setShowValueInputPopup(true)}
-              disabled={loading}
+              onClick={() => setShowValueInputPopup(true)} // Abre o popup
+              disabled={loading} // Desabilita o botão durante o carregamento
             >
               Gerar Plano com Valor de Economia Mensal
             </button>
           </div>
         </div>
 
+        {/* Mensagens de status (carregamento, erro) */}
         {loading && (
           <div className="planos-message loading-message">
             <p>Carregando plano financeiro...</p>
@@ -262,8 +309,10 @@ const Planos = () => {
           </div>
         )}
 
+        {/* Se não estiver carregando, sem erro e com dados do plano */}
         {!loading && !error && dadosPlano && (
           <>
+            {/* Seção de resumo e avisos do plano */}
             <div className="planos-summary">
               <p>
                 Entenda seu plano:
@@ -285,6 +334,7 @@ const Planos = () => {
               </p>
             </div>
 
+            {/* Seção de Ajustes Recomendados (se houver dados) */}
             {dadosPlano.ajustes && dadosPlano.ajustes.length > 0 && (
               <div className="planos-section">
                 <h2>Ajustes Recomendados</h2>
@@ -294,23 +344,27 @@ const Planos = () => {
                 </p>
                 <div className="planos-content-grid">
                   <div className="chart-wrapper">
+                    {/* Gráfico de Pizza para Ajustes Recomendados */}
                     <Chart
                       chartType="PieChart"
                       width="100%"
                       height="100%"
                       data={prepararDadosParaGrafico(dadosPlano.ajustes, "Valor Ajustado").data}
+                      loader={<div>Carregando Gráfico...</div>}
                       options={{
                         title: "Distribuição dos Ajustes Recomendados",
                         pieHole: 0.4,
                         is3D: false,
                         legend: { position: "bottom", alignment: "center" },
-                        tooltip: { trigger: 'focus' },
+                        tooltip: { isHtml: true, trigger: 'focus' }, // Tooltip HTML ativado
                         backgroundColor: 'transparent',
                         chartArea: { left: "5%", top: "10%", width: "90%", height: "70%" },
                         colors: prepararDadosParaGrafico(dadosPlano.ajustes, "Valor Ajustado").colors
                       }}
+                      loaders={chartLoaders} // Aplica opções de loader globais
                     />
                   </div>
+                  {/* Lista de detalhes dos ajustes */}
                   <div className="list-wrapper">
                     <h3>Detalhes dos Ajustes:</h3>
                     <ul>
@@ -325,6 +379,7 @@ const Planos = () => {
               </div>
             )}
 
+            {/* Seção de Áreas de Risco (se houver dados) */}
             {dadosPlano.riscos && dadosPlano.riscos.length > 0 && (
               <div className="planos-section">
                 <h2>Áreas de Risco</h2>
@@ -334,23 +389,41 @@ const Planos = () => {
                 </p>
                 <div className="planos-content-grid">
                   <div className="chart-wrapper">
+                    {/* Gráfico de Barras para Áreas de Risco */}
                     <Chart
                       chartType="BarChart"
                       width="100%"
                       height="100%"
                       data={prepararDadosParaGrafico(dadosPlano.riscos, "Valor Detectado").data}
+                      loader={<div>Carregando Gráfico...</div>}
                       options={{
                         title: "Valores por Categoria de Risco",
                         legend: { position: "none" },
                         bars: "horizontal",
-                        hAxis: { format: "currency" },
-                        tooltip: { trigger: 'focus' },
+                        hAxis: { // Configuração do eixo horizontal
+                          format: "currency", // Formato de moeda padrão da localização
+                          gridlines: { count: 0 }, // Remove as linhas de grade para um visual mais limpo
+                          textStyle: { color: '#555', fontName: 'Inter' }, // Estilo do texto
+                          minValue: 0, // Garante que o eixo comece em 0
+                          formatOptions: { // Opções de formatação específicas para o formato monetário
+                            prefix: 'R$',
+                            decimalPlaces: 2,
+                            groupingSymbol: '.',
+                            decimalSymbol: ',',
+                          }
+                        },
+                        vAxis: { // Configuração do eixo vertical
+                          textStyle: { fontSize: 12 } // Ajusta o tamanho da fonte do eixo Y
+                        },
+                        tooltip: { isHtml: true, trigger: 'focus' }, // Tooltip HTML ativado
                         backgroundColor: 'transparent',
                         chartArea: { left: "15%", top: "10%", width: "70%", height: "70%" },
-                        colors: ['#dc3545'] // Mantém a cor vermelha para todos os riscos
+                        colors: ['#dc3545'] // Cor das barras (vermelho para risco)
                       }}
+                      loaders={chartLoaders} // Aplica opções de loader globais
                     />
                   </div>
+                  {/* Lista de detalhes dos riscos */}
                   <div className="list-wrapper">
                     <h3>Detalhes dos Riscos:</h3>
                     <ul>
@@ -365,24 +438,26 @@ const Planos = () => {
               </div>
             )}
 
+            {/* Mensagem se não houver ajustes ou riscos */}
             {!dadosPlano?.ajustes?.length && !dadosPlano?.riscos?.length && (
               <div className="planos-message no-data-found-message">
                 <p>O plano foi gerado, mas não foram encontrados ajustes ou riscos para o seu perfil financeiro atual. Parece que suas finanças estão em ordem!</p>
               </div>
             )}
 
+            {/* Exibe a data da última atualização do plano */}
             {dadosPlano.dataAlteracao && (
               <p className="data-alteracao">
                 Última atualização do plano: {dadosPlano.dataAlteracao}
               </p>
             )}
 
+            {/* Navegação entre planos (se houver múltiplos) */}
             {hasMultiplePlans && (
               <div className="plan-navigation-pills">
-                {/* Botão "Plano Mais Recente" (antigo "Próximo Plano") */}
                 <button
-                  onClick={handleNextPlan} // A função handleNextPlan avança para o plano com ID menor (mais recente)
-                  disabled={currentPlanIndex === 0 || loading}
+                  onClick={handleNextPlan}
+                  disabled={currentPlanIndex === 0 || loading} // Desabilita se for o primeiro plano ou estiver carregando
                   className={`nav-pill-button ${currentPlanIndex === 0 ? 'disabled-pill' : ''}`}
                 >
                   Anterior
@@ -390,10 +465,9 @@ const Planos = () => {
                 <span className="plan-index-display">
                   Plano {currentPlanIndex + 1} de {todosOsPlanos.length}
                 </span>
-                {/* Botão "Plano Mais Antigo" (antigo "Plano Anterior") */}
                 <button
-                  onClick={handlePreviousPlan} // A função handlePreviousPlan avança para o plano com ID maior (mais antigo)
-                  disabled={currentPlanIndex === todosOsPlanos.length - 1 || loading}
+                  onClick={handlePreviousPlan}
+                  disabled={currentPlanIndex === todosOsPlanos.length - 1 || loading} // Desabilita se for o último plano ou estiver carregando
                   className={`nav-pill-button ${currentPlanIndex === todosOsPlanos.length - 1 ? 'disabled-pill' : ''}`}
                 >
                   Proximo
@@ -403,6 +477,7 @@ const Planos = () => {
           </>
         )}
 
+        {/* Mensagem inicial quando não há planos ou eles estão vazios */}
         {!loading && !error && !dadosPlano && (
           <div className="planos-message initial-message">
             <p>
@@ -413,6 +488,7 @@ const Planos = () => {
           </div>
         )}
 
+        {/* Popup para entrada de valor de economia mensal */}
         <VEcononoPopup
           isOpen={showValueInputPopup}
           onClose={() => setShowValueInputPopup(false)}
