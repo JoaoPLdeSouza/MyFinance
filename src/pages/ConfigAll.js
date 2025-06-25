@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import authService from "../services/authService"; // Ensure authService is correctly imported
-import "../assets/ConfigAll.css"; // Keep using the same CSS file for the main page layout
+import authService from "../services/authService";
+import "../assets/ConfigAll.css";
 
-// Import the new specific popup components
+// Import de PoPUps
 import EditEmailPopup from "../components/EditEmailPopup";
 import EditRendaPopup from "../components/EditRendaPopup";
 import EditSenhaPopup from "../components/EditSenhaPopup";
@@ -14,7 +14,7 @@ const ConfigAll = () => {
   const [tipoEdicao, setTipoEdicao] = useState("");
 
   useEffect(() => {
-    // Function to fetch user data
+    // Pegar informações do usuário
     const fetchUserData = () => {
       const usuarioStorage = JSON.parse(localStorage.getItem("usuario"));
       if (usuarioStorage?.id) {
@@ -27,11 +27,9 @@ const ConfigAll = () => {
       }
     };
 
-    fetchUserData(); // Initial fetch
+    fetchUserData();
 
-    // We'll call fetchUserData again after a modal closes to get updated data
-    // This is handled in fecharModal
-  }, []); // Empty dependency array means this runs once on mount
+  }, []); 
 
   const abrirModal = (tipo) => {
     setTipoEdicao(tipo);
@@ -41,7 +39,6 @@ const ConfigAll = () => {
   const fecharModal = () => {
     setModalAberto(false);
     setTipoEdicao("");
-    // Re-fetch user data to display the updated information on the main page
     const usuarioStorage = JSON.parse(localStorage.getItem("usuario"));
     if (usuarioStorage?.id) {
       authService
@@ -67,16 +64,15 @@ const ConfigAll = () => {
         <div className="profile-card-simplified">
           <h1 className="profile-header-simplified">Meu Perfil</h1>
 
-          {/* Nome Field (first information) */}
+          {/* Campo Nome (Primeira informação) */}
           <div className="info-item">
             <span className="info-label">Nome:</span>
             <span className="info-value">
               {usuario.nome || "Não informado"}
             </span>
-            {/* No edit button for name, as per requirements */}
           </div>
 
-          {/* E-mail Field */}
+          {/* Campo de E-mail */}
           <div className="info-item">
             <span className="info-label">E-mail:</span>
             <span className="info-value">{usuario.email}</span>
@@ -88,7 +84,7 @@ const ConfigAll = () => {
             </button>
           </div>
 
-          {/* Senha Field */}
+          {/* Campo de Senha */}
           <div className="info-item">
             <span className="info-label">Senha:</span>
             <span className="info-value">********</span>
@@ -100,7 +96,7 @@ const ConfigAll = () => {
             </button>
           </div>
 
-          {/* Rendimento Field */}
+          {/* Campo de Rendimento */}
           <div className="info-item">
             <span className="info-label">Rendimento:</span>
             <span className="info-value">
@@ -118,9 +114,9 @@ const ConfigAll = () => {
           </div>
         </div>
 
-        {/* Conditional rendering of popups based on tipoEdicao */}
+        {/* Renderiza o PoPUp baseada no tipoEdicao */}
         {modalAberto && (
-          <div className="modal-overlay"> {/* Overlay for the popup */}
+          <div className="modal-overlay"> {/* Overlay para o popup */}
             {tipoEdicao === "email" && (
               <EditEmailPopup usuario={usuario} onClose={fecharModal} />
             )}
@@ -130,7 +126,7 @@ const ConfigAll = () => {
             {tipoEdicao === "senha" && (
               <EditSenhaPopup usuario={usuario} onClose={fecharModal} />
             )}
-            {/* Add more conditions for other types if needed */}
+            {/* Espaço para adicionar mais caso precise */}
           </div>
         )}
       </div>

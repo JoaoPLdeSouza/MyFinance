@@ -108,7 +108,7 @@ const Lancamentos = () => {
       };
       
       try {
-        // Correção aqui: Acessar response.data para obter o array de lançamentos
+        // Acessa response.data para obter o array de lançamentos
         const response = await authService.buscarLancamentosPorUsuario(usuario.id, filtros);
         const dadosLancamentos = response.data; //
         

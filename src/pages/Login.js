@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../assets/Login.css";
 import authService from "../services/authService";
-import myFinanceLogo from "../assets/MyFinance_logo.png"; // Certifique-se de que o caminho está correto!
+import myFinanceLogo from "../assets/MyFinance_logo.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");

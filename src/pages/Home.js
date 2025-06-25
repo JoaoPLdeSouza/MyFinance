@@ -1,7 +1,7 @@
 // src/pages/Home.js
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import "../assets/Home.css"; // Certifique-se que o CSS está linkado
+import "../assets/Home.css";
 import { Chart } from "react-google-charts";
 import authService from "../services/authService";
 
@@ -21,8 +21,8 @@ const Home = () => {
 
       // Passando um objeto vazio. dataInicio e dataFinal serão "" por padrão no service.
       authService.buscarLancamentosPorUsuario(usuario.id, {}) 
-        .then(res => { // <--- AQUI: Agora esperamos o objeto 'res' completo do Axios
-          const todos = res.data; // <--- ACESSAMOS res.data para obter os lançamentos
+        .then(res => { // Aguardo o objeto 'res' completo do Axios
+          const todos = res.data; // Acesso ao res.data para obter os lançamentos
           setGastos(todos);
 
           const totalGasto = todos

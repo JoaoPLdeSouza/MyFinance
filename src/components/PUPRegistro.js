@@ -1,27 +1,24 @@
 // src/components/PUPRegistro.js
-import React, { useEffect } from 'react'; // Import useEffect
-import '../assets/Popup.css'; // Make sure this path is correct
+import React, { useEffect } from 'react';
+import '../assets/Popup.css';
 
 const PUPRegistro = ({ message, type, onClose }) => {
-  // useEffect must be called unconditionally at the top level
   useEffect(() => {
     let timer;
-    if (message) { // Conditionally set the timer only if a message exists
+    if (message) { // Seta o timer so se a mensagem existir
       timer = setTimeout(() => {
-        onClose(); // Call onClose after 4 seconds
-      }, 4000); // 4000 milliseconds = 4 seconds
+        onClose(); // Delay 4 segundos
+      }, 4000);
     }
 
-    // Cleanup function to clear the timer if the component unmounts
-    // or if the message changes before the timer finishes
     return () => {
       clearTimeout(timer);
     };
-  }, [message, onClose]); // Re-run effect if message or onClose changes
+  }, [message, onClose]);
 
-  // Conditional rendering for the component's JSX
+  // Renderização condicional se for JSX
   if (!message) {
-    return null; // Don't render if there's no message
+    return null; // Não renderiza se nã tiver mensagem
   }
 
   const popupClass = `popup-message ${type === 'error' ? 'error-message' : ''}`;

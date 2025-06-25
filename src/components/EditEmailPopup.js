@@ -4,16 +4,15 @@ import "../assets/Popup.css";
 
 const EditEmailPopup = ({ usuario, onClose }) => {
   const [novoEmail, setNovoEmail] = useState(usuario.email);
-  const [senhaAtual, setSenhaAtual] = useState(""); // Added for current password
+  const [senhaAtual, setSenhaAtual] = useState("");
   const [mensagem, setMensagem] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Your API for altering email requires id (as query param), and email + senha in body
-    authService.alterarEmail(usuario.id, novoEmail, senhaAtual) // Corrected function name and added senhaAtual
+    authService.alterarEmail(usuario.id, novoEmail, senhaAtual)
       .then(() => {
         setMensagem("Email atualizado com sucesso!");
-        // A small delay before closing to allow message to be seen
+        //Delay
         setTimeout(onClose, 1500);
       })
       .catch((error) => {
@@ -32,7 +31,7 @@ const EditEmailPopup = ({ usuario, onClose }) => {
           onChange={(e) => setNovoEmail(e.target.value)}
           required
         />
-        <input // Added input for current password
+        <input
           type="password"
           placeholder="Sua senha atual"
           value={senhaAtual}

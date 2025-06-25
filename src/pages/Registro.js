@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/Registro.css";
 import authService from "../services/authService";
-import PUPRegistro from "../components/PUPRegistro"; // Changed from Popup to PUPRegistro
+import PUPRegistro from "../components/PUPRegistro";
 
 const Registro = () => {
   const [nome, setNome] = useState("");
@@ -105,7 +105,7 @@ const Registro = () => {
       </p>
 
       {/* Carrega o componente do PUPRegistro */}
-      <PUPRegistro message={popupMessage} type={popupType} onClose={handleClosePopup} /> {/* Changed from Popup to PUPRegistro */}
+      <PUPRegistro message={popupMessage} type={popupType} onClose={handleClosePopup} /> {/* Troca para PUPRegistro */}
     </div>
   );
 };

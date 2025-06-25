@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/Popup.css'; // Certifique-se de que este CSS existe e está correto
+import '../assets/Popup.css';
 
 const VEcononoPopup = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [value, setValue] = useState('0,00'); // Estado para o valor do input, inicializado com "0,00"

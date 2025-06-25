@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import authService from "../services/authService";
-import "../assets/Popup.css"; // We'll update this CSS as well
+import "../assets/Popup.css";
 
 const EditSenhaPopup = ({ usuario, onClose }) => {
-  // const [email, setEmail] = useState(usuario.email); // No longer needed for display
   const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
@@ -18,7 +17,7 @@ const EditSenhaPopup = ({ usuario, onClose }) => {
     }
 
     const requestBody = {
-      email: usuario.email, // Use usuario.email directly, no need for a state variable for this
+      email: usuario.email,
       senhaAntiga: senhaAntiga,
       senhaNova: novaSenha,
     };
@@ -38,10 +37,9 @@ const EditSenhaPopup = ({ usuario, onClose }) => {
   };
 
   return (
-    <div className="popup"> {/* This div will be styled for centering */}
+    <div className="popup">
       <h3>Alterar Senha</h3>
       <form onSubmit={handleSubmit}>
-        {/* Email field removed from display */}
         {/* <input
           type="email"
           value={email}

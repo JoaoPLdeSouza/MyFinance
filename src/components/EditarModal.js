@@ -101,7 +101,7 @@ const EditarModal = ({ lancamento, onClose, onSave }) => {
       <div className="modal">
         <h3>Editar Lançamento</h3>
 
-        {/* Aqui você exibe a data formatada para o usuário */}
+        {/* Aqui exibe a data formatada para o usuário */}
         <p><strong>Data:</strong> {dataParaBackend}</p> 
 
         <label><br></br>Valor:</label>
